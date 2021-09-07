@@ -1,0 +1,161 @@
+/bin/cat << EOF >BFM_General.nml
+! BFM Namelist !
+!-------------------------------------------------------------------------!
+&bfm_nml
+    bio_calc      = .TRUE.
+    bfm_init      = 0
+    bfm_rstctl    = .FALSE.
+    bio_setup     = 1
+    out_fname     = 'bfm17_pom1d'
+    out_dir       = '.'
+    out_title     = 'bfm17_pom1d'
+    out_delta     = 1
+    parallel_log  = .FALSE.
+/
+
+! Parameters !
+!-------------------------------------------------------------------------!
+&Param_parameters
+    CalcPelagicFlag              =  .TRUE.
+    CalcBenthicFlag              =  0
+    CalcConservationFlag         =  .FALSE.
+    CalcTransportFlag            =  .FALSE.
+    CalcPhytoPlankton(1)         =  .FALSE.
+    CalcPhytoPlankton(2)         =  .TRUE.
+    CalcPhytoPlankton(3)         =  .FALSE.
+    CalcPhytoPlankton(4)         =  .FALSE.
+    CalcPelBacteria(1)           =  .FALSE.
+    CalcMicroZooPlankton(1)      =  .TRUE.
+    CalcMicroZooPlankton(2)      =  .FALSE.
+    CalcMesoZooPlankton(1)       =  .FALSE.
+    CalcMesoZooPlankton(2)       =  .FALSE.
+    CalcPelChemistry             =  .TRUE.
+    AssignPelBenFluxesInBFMFlag  =  .FALSE.
+    AssignAirPelFluxesInBFMFlag  =  .TRUE.
+    ChlDynamicsFlag              =  2
+    LightPeriodFlag              =  1
+    LightLocationFlag            =  3
+    check_fixed_quota            =  0
+    p_small                      =  1.0e-20
+    slp0                         =  1013.25E0
+    p_PAR                        =  $1
+    p_eps0                       =  $2
+    p_epsR6                      =  $3
+    p_epsESS                     =  0
+    p_pe_R1c                     =  $4
+    p_pe_R1n                     =  $5
+    p_pe_R1p                     =  $6
+    p_qro                        =  0.5
+    p_qon_dentri                 =  1.25
+    p_qon_nitri                  =  2.0
+    p_poro0                      =  0.75
+    p_d_tot                      =  0.30
+/
+
+! Benthic Parameters !
+!-------------------------------------------------------------------------!
+&Param_parameters_ben
+    CalcBenOrganisms(1)      =  .FALSE.
+    CalcBenOrganisms(2)      =  .FALSE.
+    CalcBenOrganisms(3)      =  .FALSE.
+    CalcBenOrganisms(4)      =  .FALSE.
+    CalcBenOrganisms(5)      =  .FALSE.
+    CalcBenBacteria(1)       =  .FALSE.
+    CalcBenBacteria(2)       =  .FALSE.
+    p_InitSink               =  100.0
+    p_d_tot_2                =  0.35
+    p_clD1D2m                =  0.01
+    p_clDxm                  =  0.001
+    p_q10diff                =  1.49
+    calc_init_bennut_states  =  0
+    p_qnQIc                  =  0.11155
+    p_qpQIc                  =  0.010255
+    p_qsQIc                  =  0.0221
+/
+
+! Pelagic initialisation of standard variables
+!-------------------------------------------------------------------------!
+&bfm_init_nml
+   O2o0 = 219.0
+   N1p0 = 0.003
+   N3n0 = 0.04
+   N4n0 = 0.008
+   N5s0 = 0.0
+   N6r0 = 0.0
+   O3c0 = 0.00
+   O3h0 = 0.0
+   O4n0 = 0.0
+   P1c0 = 0.0
+   P2c0 = 11.5
+   P3c0 = 0.0
+   P4c0 = 0.0
+   Z3c0 = 0.0
+   Z4c0 = 0.0
+   Z5c0 = 11.5
+   Z6c0 = 0.0
+   B1c0 = 0.0
+   R1c0 = 12.4
+   R2c0 = 0.0
+   R3c0 = 0.0
+   R6c0 = 12.4
+/
+
+! Pelagic initialisation of standard variables
+!-------------------------------------------------------------------------!
+&bfm_IC_nml
+   phyto_input      =  '../Inputs/BFM17_BERM_INIT/init_prof_Pc_150m_bermuda_killworth.da',
+   zoop_input       =  '../Inputs/BFM17_BERM_INIT/init_prof_Zc_150m_bermuda_killworth.da',
+   poc_input        =  '../Inputs/BFM17_BERM_INIT/init_prof_POC_150m_bermuda_killworth.da',
+   doc_input        =  '../Inputs/BFM17_BERM_INIT/init_prof_DOC_150m_bermuda_killworth.da',
+   phos_input       =  '../Inputs/BFM17_BERM_INIT/init_prof_P_150m_bermuda_killworth.da',
+   nit_input        =  '../Inputs/BFM17_BERM_INIT/init_prof_N_150m_bermuda_killworth.da',
+   am_input         =  '../Inputs/BFM17_BERM_INIT/init_prof_Am_150m_bermuda_killworth.da',
+   oxy_input        =  '../Inputs/BFM17_BERM_INIT/init_prof_Oxy_150m_bermuda_killworth.da',
+/
+
+! Benthic initialisation of standard variables
+!-------------------------------------------------------------------------!
+&bfm_init_nml_ben
+    Y1c0           =  30.0
+    Y2c0           =  610.0
+    Y3c0           =  140.0
+    Y4c0           =  220.0
+    Y5c0           =  160.0
+    H1c0           =  120.0
+    H2c0           =  45.0
+    K1p0           =  0.1
+    K11p0          =  80.0
+    K21p0          =  19.11096
+    K4n0           =  0.0277856
+    K14n0          =  1.0838474
+    K24n0          =  100.0
+    K3n0           =  0.0252624
+    K5s0           =  8.463525
+    K6r0           =  100.0
+    D1m0           =  0.002
+    D2m0           =  0.025
+    D6m0           =  0.25
+    D7m0           =  0.25
+    D8m0           =  0.25
+    D9m0           =  0.25
+    Q6c0           =  10250.0
+    Q6n0           =  120.0
+    Q6p0           =  10.0
+    Q6s0           =  88.2
+    Q1c0           =  10.4988
+    Q11c0          =  10.4988
+    G2o0           =  0.67
+    G3c0           =  120.15
+    G13c0          =  440.8475
+    G23c0          =  11920.0
+    G3h0           =  10.35
+    G13h0          =  50.0
+    G23h0          =  1192.0
+/
+
+! Stored variables
+!-------------------------------------------------------------------------!
+&bfm_save_nml
+    ave_save   = 'ETW'  'O2o'  'DIC'  'EIR'  'ESW'  'ERHO'  'xEPS'  'Chla'  'N1p'  'N3n'  'N4n' 'P2c'  'P2l' 'P2n'  'P2p'  'Z5c'  'Z5n'  'Z5p' 'R1c'  'R6c'  'R1n'  'R6n'  'R1p'  'R6p'  'eiPPY(iiP1)'  'eiPPY(iiP2)'  'eiPPY(iiP3)'  'eiPPY(iiP4)'  'sunPPY(iiP1)'  'sunPPY(iiP2)'  'sunPPY(iiP3)'  'sunPPY(iiP4)'  'ruPTc'  'resPP'  'resZT'  'ruPTn'  'ruPTp'  'exPP'  'ruZTc'  'netZTc'  'rePTp'  'reBn'  'reBp'  'ruBn'  'ruBp' 'EPR'
+/
+EOF

@@ -1,0 +1,142 @@
+=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=
+I. Parameter Estimation
+=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=
+The goal of this work is to improve model agreement with observational data by tuning parameter values. Therefore, this work seeks to perform parameter estimation studies on BFM17. Parameter estimation is often performed via parameter optimization where the inputs are the model parameters and the objective is to minimize the disagreement between the model output and some data set.
+
+The Design Analysis Kit for Optimization and Tera-scale Applications (https://dakota.sandia.gov/), DAKOTA, is a flexible numerical analysis toolbox which includes optimization capabilities. The flexibility of DAKOTA is due to its treatment of models as blackboxes. That is to say, DAKOTA is able to apply various numerical analysis tools on a model without being intimately integrated with the model. DAKOTA is simply informed of the desired analysis, how to agnostically run the model, and where the results will be.
+
+The parameter estimations here will be performed using the optimization capabilities of DAKOTA. The current set up uses the Fletcher-Reeves implementation of conjugate gradient optimization, but this can be changed very easily thanks to the flexibility of DAKTOA.
+
+! To Run: !
+=-=-=-=-=-=
+./RunOpt.sh OptCase.in
+
+If you want to change the case that you are running. You can do so by changing the options in OptCase.in.
+I.1 Observing System Simulation Experiment
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=
+
+An Observing System Simulation Experiment (OSSE) is a parameter estimation study performed using artificial data. The artificial data is produced using the model implemented with a set of nominal parameter values. Each OSSE starts with perturbing the initial parameter value(s) by some amount and then testing whether the optimization algorithm is able to recover the nominal value(s). OSSE's are performed to test the implementation and efficacy of an optimization algorithm.
+
+The option to run an OSSE experiment has been included in the work here. It is done with one of the options int he OptCase.in file, which is discussed below.
+
+I.2 Optimization
+=-=-=-=-=-=-=-=-=
+
+The true objective is to improve model results by performing an optimization which minimizes the disagreement between the model output and observational data.
+
+The option to run an parameter estimation case using experimental data has not been set up yet, here.
+
+> > > This version of the work is not set up to run optimization cases < < <
+It is only set up to run OSSE experiments.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+II. Running and Code Description
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+This code has been set up in such a way that there are essentially layers of code which can be used to perform large sets of experiments with relative ease. It is easiest to understand the code from the inside out.
+
+The inner most layer is the Biogeochemical Flux Model, in one of two implementations. The simpler implementation is the BFM17 in a 0D configuration. The more complex and physcial implemenation is BFM17 coupled to the 1D Princeton Ocean Model (POM1D). These models are discussed further below.
+
+The second layer is DAKOTA. Without knowing actually what is being run, DAKOTA is able to perform an optimization of BFM17 parameters. DAKOTA is provided with an input file and an interface script which tells DAKOTA how to execute the model.
+
+The third layer was introduced to create a flexible framework for identifying and setting up an arbitrary parameter estimation case and being able to run it. The goals was to be able to run a case with a selected set of parameters and a selected set of objectives and be able to run the case with minimal to no-human editing of the scripts on the lower two levels.
+
+The forth and outer most layer of code is to run set of individual parameter estimation cases. This part is still being worked on . . .
+
+I will now part down the individual pieces of the code, starting at the outer most layer and working my way inward. As we move inward the need to edit the scripts should decrease. It is therefore more important to understand what the outlayer scripts are doing and how to change user defined selections.
+
+II.1 : The Outer Layer
+=-=-=-=-=-=-=-=-=-=-=-=
+
+II.1.1 The Meta Run Script
+File, MetaRunOpt.sh
+
+> > > THIS SCRIPT IS CURRENTLY OBSOLETE. < < <
+
+II.2 : The Second Layer
+=-=-=-=-=-=-=-=-=-=-=-=
+
+II.2.1 The Run Script
+File, RunOpt.sh
+
+As an overview, the run script reads the set up file then proceeds to generate and run the desired parameter estimation study.
+
+For is a more extensive description of what is going on. In the run directory, PE-Runs, a new directory is created for the new parameter study. The
+
+II.2.2 Case Input File
+=-=-=-=-=-=-=-=-=-=-=
+File, OptCase.in
+
+II.3 The Third Layer
+=-=-=-=-=-=-=-=-=-=-=
+
+II.3.1 Case Run Script
+
+
+II.3.2 Generate Interface Script
+File, write_ofunc.sh
+
+II.3.3 Generate Objective Function Calculator
+File, write_interface.sh
+
+II.4 : The Forth Layer
+=-=-=-=-=-=-=-=-=-=-=-=
+
+II.4.1 dakota.in
+II.4.2 interface.sh
+
+II.4.3 Generate Namelists
+Files,
+- write_BFMGen.sh
+- write_params.sh
+- write_PelEco.sh
+- write_PelEnv.sh
+
+
+II.4.4 The BGC Models
+
+The biogeochemical models are discussed in the following section. Please go there for the relevant information.
+
+III. BFM 17 - OD Implementation
+Source Files: Source/Source-0D/Source-BFM0D
+The Biogeochemical Flux Model with 17 state variables (BFM17) is a model for biogeochemical processes for open ocean marine ecosystems. BFM17 can be run in a 0D configuration where the ecosystem is simulated through time alone.
+
+IV. BFM17 + POM1D
+Source Files: Source/Source-1D/Source-BFMPOM
+
+Alternatively, the BFM17 has been coupled to a 1D implementation of the Prince Ocean Model (POM/POM1D). POM serves as a vertical mixing model allowing us to model a column of water through time.
+
+POM take as input data the
+
+
+
+V. Notes on versions
+
+V1 : Version 1
+
+V2: Version 2
+Currently not capable of running a single optimization case [Updated to be able to run single case]
+
+Updates Include
+- added the ability to perform initial evaluation of model from normalizing objective function values.
+- added the single run case.
+
+V3: Version 3
+The overall approach has been changed. This updated version reads in a optimization case input file and automatically runs the corresponding optimization case.
+
+Updates Include
+- New script : RunOpt.sh
+- New script : write_ofunc.sh
+- New input file : OptCase.in
+Note MetaRunOpt.sh is now obsolete, but will be updated to be a meta set generation script.
+- removed Source/MATLAB directory of objective function scripts, now generated automatically
+- OSSE-Runs was renamed PE-Runs
+- Cleaned up source files for running both 0D and 1D implementations of model
+Note: this was done to minimize number of duplicate files.
+Note: DOC, DON, DOP, and NPP as objective function options have not been set up yet.
+Note: the generation script for the objective function calculator has not been set up to for the observational values to be on option yet.
+- The observational data was added to the Data directory for the 1D case, but this was moved to Source/Souce-BFMPOM/Data during the consolidation process.

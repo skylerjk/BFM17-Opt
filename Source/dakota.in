@@ -1,0 +1,62 @@
+# DAKOTA Input File: dakota.in
+#
+# This script is used to control the parameter estimation of an arbitrary model
+# by the numerical analysis toolbox DAKOTA. The connection between DAKOTA and
+# the model are handled in the shell script interface.sh.
+#
+# This file is an input to DAKOTA which identifies the optimization method to be
+# used in this parameter estimation study, the interfacing script, and the
+# location of the files need to run the model. This file also informs DAKOTA of
+# the number of parameters in the study, their nominal values, and their upper
+# and lower bounds.
+#
+# Usage:
+# dakota -i dakota.in -o output.out -e error.err
+
+environment
+  tabular_data
+    tabular_data_file = 'PEOutput.dat'
+
+method
+  DI_MTHD
+    DI_CT
+    DI_MI
+    DI_FE
+    DI_SD
+    DI_ID
+
+model
+  single
+
+variables
+  continuous_design = NUMPRMS
+    descriptor    = PRMS
+    initial_point = IVAL
+    lower_bounds  = LBND
+    upper_bounds  = UBND
+
+interface
+  fork
+    # Interface script between DAKOTA and model
+    analysis_driver = 'interface.sh'
+    # Parameter input file - DAKOTA to model
+    parameters_file = 'params.in'
+    # Objective function value - model to DAKOTA
+    results_file = 'result.out'
+      file_save
+    work_directory
+      named 'OptEval'
+      directory_tag
+#      directory_save
+    # Files need to run model
+    copy_files = 'templatedir/*'
+    # Defines parameter output format
+    aprepro
+
+responses
+  objective_functions = 1
+  numerical_gradients
+    DI_MS
+    DI_IT
+    DI_GS
+  no_hessian
