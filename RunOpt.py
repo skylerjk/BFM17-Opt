@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 # Parameter Names
 PN = []
@@ -39,7 +40,18 @@ RunDir = 'PE-Runs/Opt-TEST'
 os.system("mkdir " + RunDir)
 
 # Compile BFM17 + POM1D
-os.system("cp -r Source/Source-1D " + RunDir + "/Config")
+os.system("cp -r Source/Source-BFMPOM " + RunDir + "/Config")
+
+os.chdir(RunDir + "/Config")
+os.system("./Config_BFMPOM.sh")
+os.chdir("../../../")
+
+os.system("cp -r Source-Run" + RunDir + "/Source")
+os.system("cp Source/interface.py " + RunDir + "/Source")
+
+os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
+
+os.system("cp Source/dakota.in " + RunDir)
 
 # Set Up DAKOTA input file
 for ind, prm in enumerate(PN):
@@ -58,7 +70,7 @@ np.save(RunDir + "/PControls",np.array([PN,PC]))
 np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
 
 # Run Dakota
-os.chdir(RunDir + "/opt_dir")
+os.chdir(RunDir)
 os.system("dakota -i dakota.in -o output.out -e error.err")
 
 
@@ -80,9 +92,7 @@ os.system("dakota -i dakota.in -o output.out -e error.err")
 
 #
 
-# os.chdir(RunDir + "/Config")
-# os.system("./Config_BFMPOM.sh")
-# os.chdir("../../../")
+
 #
 # # Template Run Directory
 # os.system("cp -r Source/Source-Run " + RunDir + "/Source")
@@ -93,8 +103,7 @@ os.system("dakota -i dakota.in -o output.out -e error.err")
 # # Copy Input Data
 # os.system("cp -r Source/ObsData " + RunDir)
 #
-# # Copy DAKOTA input file
-# os.system("cp Source/dakota.in " + RunDir)
+
 # # Copy DAKOTA input file
 # os.system("cp Source/interface.py " + RunDir + "/Source")
 # os.system("cp Source/CalcObjective.py " + RunDir + "/Source")

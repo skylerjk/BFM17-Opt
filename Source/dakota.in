@@ -38,7 +38,7 @@ variables
 interface
   fork
     # Interface script between DAKOTA and model
-    analysis_driver = 'interface.sh'
+    analysis_driver = 'python3 interface.py'
     # Parameter input file - DAKOTA to model
     parameters_file = 'params.in'
     # Objective function value - model to DAKOTA
@@ -49,7 +49,7 @@ interface
       directory_tag
 #      directory_save
     # Files need to run model
-    copy_files = 'templatedir/*'
+    copy_files = 'Source/*'
     # Defines parameter output format
     aprepro
 
