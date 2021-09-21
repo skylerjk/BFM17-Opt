@@ -36,7 +36,7 @@ UB = np.zeros(51)
 
 with open('OptCase2.in') as readFile:
     for i, line in enumerate(readFile):
-        if i >= 27 and i <= 77:
+        if i >= 4:
             Parameter_Entry = line.split()
             # print(line)
             # print(Parameter_Entry)
@@ -75,7 +75,9 @@ os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 # Copy Input Data
 os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
 
+
 # Perform Reference Run
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
 os.chdir(RunDir + "/RefRun")
 # Writing Parameter Values to Namelists
@@ -89,10 +91,13 @@ os.system("./pom.exe")
 os.chdir("../../../")
 
 # Complete Case Set-Up
+# Move Reference Run to template directory
 os.system("cp " + RunDir + "/RefRun/bfm17_pom1d.nc " + RunDir + "/Source/bfm17_pom1d-ref.nc ")
-
+# Move interface to template directory
 os.system("cp Source/interface.py " + RunDir + "/Source")
-
+# Move objective function calculator to template directory
+os.system("cp Source/CalcObjective.py " + RunDir + "/Source")
+# Move DAKOTA input file to Run directory
 os.system("cp Source/dakota.in " + RunDir)
 
 prm_cnt = 0
@@ -104,6 +109,12 @@ for ind, prm in enumerate(PN):
     os.system("sed -i '' 's/DI_MI/max_iterations = 1000/' " + RunDir + "/dakota.in")
 
     if PC[ind]:
+        InVal = Norm_Val[ind] + 0.1
+        if InVal > 1.0:
+            InVal = InVal - 1.0
+        elif InVal < 0.0:
+            InVal = InVal + 1.0
+
         os.system("sed -i '' \"/descriptors =/s/$/ \\'" + prm + "\\'/\" " + RunDir + "/dakota.in")
         os.system("sed -i '' '/initial_point =/s/$/ " + f"{Norm_Val[ind]:g}" + "/' " + RunDir + "/dakota.in")
         os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
@@ -117,45 +128,6 @@ os.system("sed -i '' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDi
 np.save(RunDir + "/PControls",np.array([PN,PC]))
 np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
 
-# Perform Reference Run
-
-
-
-
-
 # Run Dakota
-# os.chdir(RunDir)
-# os.system("dakota -i dakota.in -o output.out -e error.err")
-
-
-
-
-
-
-
-
-
-
-
-
-
-############################ REFERENCE #########################################
-# # Run Directory
-# RunDir = 'SA-Runs/Samples2'
-#
-
-#
-
-
-#
-# # Template Run Directory
-# os.system("cp -r Source/Source-Run " + RunDir + "/Source")
-# os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
-#
-
-#
-
-# # Copy DAKOTA input file
-# os.system("cp Source/interface.py " + RunDir + "/Source")
-# os.system("cp Source/CalcObjective.py " + RunDir + "/Source")
-#
+os.chdir(RunDir)
+os.system("dakota -i dakota.in -o output.out -e error.err")

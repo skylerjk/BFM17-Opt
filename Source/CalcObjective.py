@@ -6,9 +6,7 @@ State_Variables = ['P2l','P2c','P2n','P2p','Z5c','Z5n','Z5p','R1c','R1n','R1p','
 
 depth = 150
 Num_Days = 30
-Num_SVar = length(State_Variables)
-
-print(Num_SVar)
+Num_SVar = len(State_Variables)
 
 # Location of BFM17-POM1D results
 NC_Ref_File_Location = 'bfm17_pom1d-ref.nc'
@@ -34,12 +32,12 @@ for i, var in enumerate(State_Variables):
     BGC_Ref_Data[i,:,:] = NC_Ref_Data[var][:]
     BGC_Tst_Data[i,:,:] = NC_Tst_Data[var][:]
 
-RMSD = np.zeros(Num_SVar)
-RMSD = np.sqrt(np.sum((BGC_Tst_Data - BGC_Ref_Data)**2)/(Num_Days*150.0))
+N = float(Num_Days*depth)
+RMSD = np.sqrt(np.sum(np.sum((BGC_Tst_Data - BGC_Ref_Data)**2, axis = 2), axis = 1)/N)
 
 RMSD2 = np.zeros(Num_SVar)
 for i in range(Num_SVar):
-    RMSD2[i] = np.sqrt(np.sum((BGC_Tst_Data[i,:,:] - BGC_Ref_Data[i,:,:])**2)/(Num_Days*150.0))
+    RMSD2[i] = np.sqrt(np.sum((BGC_Tst_Data[i,:,:] - BGC_Ref_Data[i,:,:])**2)/N)
 
 obj = np.sum(RMSD)
 obj2 = np.sum(RMSD2)

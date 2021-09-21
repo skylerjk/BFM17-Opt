@@ -1,9 +1,9 @@
 &Params_POMBFM
 H       =  150.
-DTI     =  600.
+DTI     =  400.
 ALAT    =  45.
 IDIAGN  =  1
-IDAYS   =  1080
+IDAYS   =  30
 SMOTH   =  0.1
 IHOTST  =  0
 KL1     =  2

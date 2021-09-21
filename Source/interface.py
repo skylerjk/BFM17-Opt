@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 # Namelist Dictionary defines which parameters are in a given namelist file
 Namelist_Dictionary = {
@@ -23,14 +24,12 @@ def find_key(Dict,val):
         return key
 
 # Load the Optimization Control Information
-PN, PC = np.load('PControls.npy')
+PN, PC = np.load('../PControls.npy')
 # Load the Parameter Values
-NV, LB, UB = np.load('PValues.npy')
+NV, LB, UB = np.load('../PValues.npy')
 
 # Run Parameter Values
 RV = np.copy(NV)
-
-Norm_Val = np.array([0.5,0.6,0.4,0.3,0.2])
 
 with open('params.in') as readFile:
     for i, line in enumerate(readFile):
@@ -43,7 +42,7 @@ with open('params.in') as readFile:
         if (i >= 1) and (i < 1+Num_Prms) :
             Parameter_Entry = line.split()
             # Parameter Value - Normalized
-            Prm_Vals_Norm[i-1] = Parameter_Entry[3]
+            Norm_Val[i-1] = Parameter_Entry[3]
 
 cnt = 0
 for prm in range(51):

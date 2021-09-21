@@ -1,104 +1,55 @@
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-#                       Parameter Estimation Study Controls                    #
-#                       =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=                    #
-# Do not change the order of the parameters below, do not remove the header    #
-# string.                                                                      #
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-# Name of the directory for running study
-RunDir=05Prm-OSSE-1D-FRCGwNorm-IT_central-fd_5e-4
-# Model selection (0D/1D)
-BFMCase=1D
-# Comparing to model generated synthetic data or observational data (Mdl/Obs)
-OptCase=Mdl
-# Optimization algorithm to be used in the parameter estimation (conmin/cobyla)
-OptMthd=conmin
-# Perturb parameters up or down (up/dn), note only used for Mdl data case
-PrtCase=up
-# Flag for running an initial evaluation of the model (true/false)
-InitRun=true
-# Flag for running an ultimate evaluation of the model (true/false)
-PostRun=true
-# Normalize Objective Function Switch (true/false) :
-# if true but init run flag is false, reset automatically to true
-NormObj=true
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 #                      BFM17 Parameter List and Controls                       #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 ParameterList (DO NOT CHANGE ORDER, OR ADD LINES)
- 1. p_PAR       true   0.4       0.3       0.5           # Fraction of photosynthetically available radiation
- 2. p_eps0      true   0.0435    0.04      0.047         # Background attenuation coefficient
- 3. p_epsR6     false   0.1e-3    0.5e-4    0.15e-3       # C-specific attenuation coefficient of particulate detritus
- 4. p_pe_R1c    false   0.60      0.5       1.0           # Partition between dissolved and particulate excretion of C
- 5. p_pe_R1n    false   0.72      0.5       1.0           # Partition between dissolved and particulate excretion of N
- 6. p_pe_R1p    false   0.832     0.5       1.0           # Partition between dissolved and particulate excretion of P
- 7. p_sum       true    1.6       1.0       4.0           # Maximum specific photosynthetic rate
- 8. p_srs       false   0.05      0.025     0.075         # Basal specific respiration rate
- 9. p_sdmo      false   0.05      0.025     0.075         # Maximum specific nutrient-stress lysis rate
-10. p_thdo      false   0.1       0.05      0.15          # Nutrient stress threshold
-11. p_pu_ea     false   0.05      0.025     0.075         # Excreted fraction of primary production
-12. p_pu_ra     false   0.05      0.025     0.075         # Activity respiration fraction
-13. p_qun       false   0.025     0.0125    0.0375        # Specific affinity constant for nitrogen
-14. p_lN4       false   1.5       1.0       3.0           # Half saturation constant for ammonium uptake
-15. p_qnlc      false   6.87e-3   3.435e-3  1.0305e-2     # Minimum nitrogen quota
-16. p_qncPPY    false   1.26e-2   6.3e-3    1.89e-2       # Optimal nitrogen quota
-17. p_xqn       false   1.5       1.0       2.0           # Coefficient for Maximum nitrogen quota
-18. p_qup       false   2.5e-3    1.25e-3   3.75e-3       # Specific affinity constant for phosphorus
-19. p_qplc      false   4.29e-4   2.145e-4  6.435e-4      # Minimum phosphorus quota
-20. p_qpcPPY    false   7.86e-4   3.93e-4   1.1179e-3     # Optimal phosphorus quota
-21. p_xqp       false   1.5       1.0       2.0           # Coefficient for Maximum phosphorus quota
-22. p_esNI      false   0.75      0.25      1.0           #
-23. p_res       false   0.5       0.25      0.75          #
-24. p_alpha_chl false   1.52e-5   7.6e-6    2.28e-5       # Maximum light utilization coefficient
-25. p_qlcPPY    false   0.016     0.008     0.024         # Maximum chlorophyll to carbon quota
-26. p_epsChla   false   0.03      0.015     0.045         # Chlorophyll-specific light absorption coefficient
-27. z_srs       false   0.02      0.01      0.05           # Basal specific respiration rate
-28. z_sum       true   2.0       1.0       5.0           # Potential specific growth rate
-29. z_sdo       false   0.25      0.125     0.375         # Oxygen dependent specific mortality rate
-30. z_sd        false   0.05      0.025     0.075         # Specific mortality rate
-31. z_pu        false   0.5       0.25      0.75          # Assimilation efficiency
-32. z_pu_ea     false   0.25      0.125     0.375         # Fraction of activity excretion
-33. z_chro      false   0.5       0.25      0.75          # Half saturation for zooplankton processes
-34. z_chuc      false   200.0     100.0     500.0         # Michaelis constant for total food ingestion
-35. z_minfood   false   50.0      25.0      75.0          # Feeding Threshold
-36. z_qpcMIZ    false   7.862e-4  7.0e-4    9.0e-4        # Optimal phosphorous quota
-37. z_qncMIZ    false   1.258e-2  1.0e-2    2.0e-2        # Optimal nitrogen quota
-38. z_paPPY     true   1.0       0.5       1.0           # Availability of phytoplankton to zooplankton
-39. p_sN4N3     false   0.01      0.005     0.015         # Specific nitrification rate at 10 deg C
-40. p_clO2o     false   10.0      5.0       10.0          # Half saturation for chemical processes
-41. p_sR6O3     false   0.1       0.05      0.45          # Specific remineralization rate of particulate carbon
-42. p_sR6N1     false   0.1       0.05      0.45          # Specific remineralization rate of particulate phosphorus
-43. p_sR6N4     false   0.1       0.05      0.45          # Specific remineralization rate of particulate nitrogen
-44. p_sR1O3     false   0.05      0.05      0.45          # Specific remineralization rate of dissolved carbon
-45. p_sR1N1     false   0.05      0.05      0.45          # Specific remineralization rate of dissolved phosphorus
-46. p_sR1N4     false   0.05      0.05      0.45          # Specific remineralization rate of dissolved nitrogen
-47. p_rR6m      false   1.0       0.5       5.5           # Settling velocity of particulate detritus
-48. NRT_o2o     false   0.06      0.0       0.5           # Relaxation constant for oxygen at bottom
-49. NRT_n1p     false   0.06      0.0       0.5           # Relaxation constant for phosphate at bottom
-50. NRT_n3n     false   0.06      0.0       0.5           # Relaxation constant for nitrate at bottom
-51. NRT_n4n     false   0.05      0.0       0.5           #
-
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-#                          BFM17 Output Data Controls                          #
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-ObjectiveList (DO NOT CHANGE ORDER, OR ADD LINES)
-P2l true            # Phytoplankton Chlorophyll
-P2c true            # Phytoplankton Carbon
-P2n true            # Phytoplankton Nitrogen
-P2p true            # Phytoplankton Phosphorous
-Z5c true            # Zooplankton Carbon
-Z5n true            # Zooplankton Nitrogen
-Z5p true            # Zooplankton Phosphorous
-R1c true            # Dissolved Carbon
-R1n true            # Dissolved Nitrogen
-R1p true            # Dissolved Phosphorous
-R6c true            # Particulate Carbon - Detritus
-R6n true            # Particulate Nitrogen - Detritus
-R6p true            # Particulate Phosphorous - Detritus
-N1p true            # Phosphate
-N3n true            # Nitrate
-N4n true            # Ammonium
-O2o true            # Oxygen
-DOC false           # accumulative dissolved organic carbon
-DON false           # accumulative dissolved organic nitrogen
-DOP false           # accumulative dissolved organic Phosphorous
-NPP false           # net primary production
+ 1. p_PAR       True   0.4       0.3       0.5           # Fraction of photosynthetically available radiation
+ 2. p_eps0      True   0.0435    0.04      0.047         # Background attenuation coefficient
+ 3. p_epsR6     False   0.1e-3    0.5e-4    0.15e-3       # C-specific attenuation coefficient of particulate detritus
+ 4. p_pe_R1c    False   0.60      0.5       1.0           # Partition between dissolved and particulate excretion of C
+ 5. p_pe_R1n    False   0.72      0.5       1.0           # Partition between dissolved and particulate excretion of N
+ 6. p_pe_R1p    False   0.832     0.5       1.0           # Partition between dissolved and particulate excretion of P
+ 7. p_sum       True    1.6       1.0       4.0           # Maximum specific photosynthetic rate
+ 8. p_srs       False   0.05      0.025     0.075         # Basal specific respiration rate
+ 9. p_sdmo      False   0.05      0.025     0.075         # Maximum specific nutrient-stress lysis rate
+10. p_thdo      False   0.1       0.05      0.15          # Nutrient stress threshold
+11. p_pu_ea     False   0.05      0.025     0.075         # Excreted fraction of primary production
+12. p_pu_ra     False   0.05      0.025     0.075         # Activity respiration fraction
+13. p_qun       False   0.025     0.0125    0.0375        # Specific affinity constant for nitrogen
+14. p_lN4       False   1.5       1.0       3.0           # Half saturation constant for ammonium uptake
+15. p_qnlc      False   6.87e-3   3.435e-3  1.0305e-2     # Minimum nitrogen quota
+16. p_qncPPY    False   1.26e-2   6.3e-3    1.89e-2       # Optimal nitrogen quota
+17. p_xqn       False   1.5       1.0       2.0           # Coefficient for Maximum nitrogen quota
+18. p_qup       False   2.5e-3    1.25e-3   3.75e-3       # Specific affinity constant for phosphorus
+19. p_qplc      False   4.29e-4   2.145e-4  6.435e-4      # Minimum phosphorus quota
+20. p_qpcPPY    False   7.86e-4   3.93e-4   1.1179e-3     # Optimal phosphorus quota
+21. p_xqp       False   1.5       1.0       2.0           # Coefficient for Maximum phosphorus quota
+22. p_esNI      False   0.75      0.25      1.0           #
+23. p_res       False   0.5       0.25      0.75          #
+24. p_alpha_chl False   1.52e-5   7.6e-6    2.28e-5       # Maximum light utilization coefficient
+25. p_qlcPPY    False   0.016     0.008     0.024         # Maximum chlorophyll to carbon quota
+26. p_epsChla   False   0.03      0.015     0.045         # Chlorophyll-specific light absorption coefficient
+27. z_srs       False   0.02      0.01      0.05           # Basal specific respiration rate
+28. z_sum       True   2.0       1.0       5.0           # Potential specific growth rate
+29. z_sdo       False   0.25      0.125     0.375         # Oxygen dependent specific mortality rate
+30. z_sd        False   0.05      0.025     0.075         # Specific mortality rate
+31. z_pu        False   0.5       0.25      0.75          # Assimilation efficiency
+32. z_pu_ea     False   0.25      0.125     0.375         # Fraction of activity excretion
+33. z_chro      False   0.5       0.25      0.75          # Half saturation for zooplankton processes
+34. z_chuc      False   200.0     100.0     500.0         # Michaelis constant for total food ingestion
+35. z_minfood   False   50.0      25.0      75.0          # Feeding Threshold
+36. z_qpcMIZ    False   7.862e-4  7.0e-4    9.0e-4        # Optimal phosphorous quota
+37. z_qncMIZ    False   1.258e-2  1.0e-2    2.0e-2        # Optimal nitrogen quota
+38. z_paPPY     True   1.0       0.5       1.0           # Availability of phytoplankton to zooplankton
+39. p_sN4N3     False   0.01      0.005     0.015         # Specific nitrification rate at 10 deg C
+40. p_clO2o     False   10.0      5.0       10.0          # Half saturation for chemical processes
+41. p_sR6O3     False   0.1       0.05      0.45          # Specific remineralization rate of particulate carbon
+42. p_sR6N1     False   0.1       0.05      0.45          # Specific remineralization rate of particulate phosphorus
+43. p_sR6N4     False   0.1       0.05      0.45          # Specific remineralization rate of particulate nitrogen
+44. p_sR1O3     False   0.05      0.05      0.45          # Specific remineralization rate of dissolved carbon
+45. p_sR1N1     False   0.05      0.05      0.45          # Specific remineralization rate of dissolved phosphorus
+46. p_sR1N4     False   0.05      0.05      0.45          # Specific remineralization rate of dissolved nitrogen
+47. p_rR6m      False   1.0       0.5       5.5           # Settling velocity of particulate detritus
+48. NRT_o2o     False   0.06      0.0       0.5           # Relaxation constant for oxygen at bottom
+49. NRT_n1p     False   0.06      0.0       0.5           # Relaxation constant for phosphate at bottom
+50. NRT_n3n     False   0.06      0.0       0.5           # Relaxation constant for nitrate at bottom
+51. NRT_n4n     False   0.05      0.0       0.5           #
