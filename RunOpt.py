@@ -1,6 +1,28 @@
 import numpy as np
 import os
 
+# Namelist Dictionary defines which parameters are in a given namelist file
+Namelist_Dictionary = {
+  'BFM_General.nml' : ['p_PAR', 'p_eps0', 'p_epsR6', 'p_pe_R1c', 'p_pe_R1n', 'p_pe_R1p'],
+  'Pelagic_Ecology.nml' : ['p_sum', 'p_srs', 'p_sdmo', 'p_thdo', 'p_pu_ea', 'p_pu_ra', \
+  'p_qun', 'p_lN4', 'p_qnlc', 'p_qncPPY', 'p_xqn', 'p_qup', 'p_qplc', 'p_qpcPPY', \
+  'p_xqp', 'p_esNI', 'p_res', 'p_alpha_chl', 'p_qlcPPY', 'p_epsChla', 'z_srs', 'z_sum', \
+  'z_sdo', 'z_sd', 'z_pu', 'z_pu_ea', 'z_chro', 'z_chuc', 'z_minfood', 'z_qpcMIZ', \
+  'z_qncMIZ', 'z_paPPY'],
+  'Pelagic_Environment.nml' : ['p_sN4N3', 'p_clO2o', 'p_sR6O3', 'p_sR6N1', 'p_sR6N4', \
+  'p_sR1O3', 'p_sR1N1', 'p_sR1N4', 'p_rR6m'],
+  'params_POMBFM.nml' : ['NRT_o2o', 'NRT_n1p', 'NRT_n3n', 'NRT_n4n']
+}
+
+# Function to return Key for parameter Dictionary
+def find_key(Dict,val):
+    key_list = list(Dict.keys())
+
+    for key in key_list:
+      Search_List = Dict[key]
+      if val in Search_List:
+        return key
+
 # Parameter Names
 PN = []
 # Parameter Controls
@@ -47,12 +69,29 @@ os.system("./Config_BFMPOM.sh")
 os.chdir("../../../")
 
 os.system("cp -r Source/Source-Run " + RunDir + "/Source")
-os.system("cp Source/interface.py " + RunDir + "/Source")
 
 os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 
 # Copy Input Data
 os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
+
+# Perform Reference Run
+os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
+os.chdir(RunDir + "/RefRun")
+# Writing Parameter Values to Namelists
+for i, prm in enumerate(PN):
+    Nml_File = find_key(Namelist_Dictionary, prm)
+
+    # Replace value of current parameter
+    os.system("sed -i '' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+# Run Reference Evaluation
+os.system("./pom.exe")
+os.chdir("../../../")
+
+# Complete Case Set-Up
+os.system("cp " + RunDir + "/RefRun/bfm17_pom1d.nc " + RunDir + "/Source/bfm17_pom1d-ref.nc ")
+
+os.system("cp Source/interface.py " + RunDir + "/Source")
 
 os.system("cp Source/dakota.in " + RunDir)
 
@@ -71,7 +110,6 @@ for ind, prm in enumerate(PN):
         os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
 
         prm_cnt +=1
-        print(prm_cnt)
 
 os.system("sed -i '' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDir + "/dakota.in")
 
@@ -80,6 +118,7 @@ np.save(RunDir + "/PControls",np.array([PN,PC]))
 np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
 
 # Perform Reference Run
+
 
 
 
