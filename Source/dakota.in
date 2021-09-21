@@ -21,19 +21,16 @@ method
   DI_MTHD
     DI_CT
     DI_MI
-    DI_FE
-    DI_SD
-    DI_ID
 
 model
   single
 
 variables
-  continuous_design = NUMPRMS
-    descriptor    = PRMS
-    initial_point = IVAL
-    lower_bounds  = LBND
-    upper_bounds  = UBND
+  continuous_design =
+    descriptors =
+    initial_point =
+    lower_bounds =
+    upper_bounds =
 
 interface
   fork
@@ -56,7 +53,4 @@ interface
 responses
   objective_functions = 1
   numerical_gradients
-    DI_MS
-    DI_IT
-    DI_GS
   no_hessian

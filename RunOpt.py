@@ -46,32 +46,47 @@ os.chdir(RunDir + "/Config")
 os.system("./Config_BFMPOM.sh")
 os.chdir("../../../")
 
-os.system("cp -r Source-Run" + RunDir + "/Source")
+os.system("cp -r Source/Source-Run " + RunDir + "/Source")
 os.system("cp Source/interface.py " + RunDir + "/Source")
 
 os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 
+# Copy Input Data
+os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
+
 os.system("cp Source/dakota.in " + RunDir)
 
+prm_cnt = 0
 # Set Up DAKOTA input file
 for ind, prm in enumerate(PN):
-    #  Only needed for the random sampling implementation
-    # os.system("sed -i '' '/ samples =/s/$/ " + str(Num_Samples) + "/' " + RunDir + "/dakota.in")
-    # os.system("sed -i '' '/ seed =/s/$/ " + str(DAKOTA_Seed) + "/' " + RunDir + "/dakota.in")
+    #  DAKOTA Controls setting up Optimization Method
+    os.system("sed -i '' 's/ DI_MTHD/conmin_frcg/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_MI/max_iterations = 1000/' " + RunDir + "/dakota.in")
 
     if PC[ind]:
-        os.system("sed -i '' \"/ descriptors =/s/$/ \'" + prm + "\'/\" " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/ initial_state =/s/$/ " + f"{Norm_Val[ind]:g}" + "/' " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/ lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/ upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
+        os.system("sed -i '' \"/descriptors =/s/$/ \\'" + prm + "\\'/\" " + RunDir + "/dakota.in")
+        os.system("sed -i '' '/initial_point =/s/$/ " + f"{Norm_Val[ind]:g}" + "/' " + RunDir + "/dakota.in")
+        os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
+        os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
+
+        prm_cnt +=1
+        print(prm_cnt)
+
+os.system("sed -i '' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDir + "/dakota.in")
 
 # Output Information for interface.py
 np.save(RunDir + "/PControls",np.array([PN,PC]))
 np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
 
+# Perform Reference Run
+
+
+
+
 # Run Dakota
-os.chdir(RunDir)
-os.system("dakota -i dakota.in -o output.out -e error.err")
+# os.chdir(RunDir)
+# os.system("dakota -i dakota.in -o output.out -e error.err")
 
 
 
@@ -98,10 +113,7 @@ os.system("dakota -i dakota.in -o output.out -e error.err")
 # os.system("cp -r Source/Source-Run " + RunDir + "/Source")
 # os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 #
-# # Copy Input Data
-# os.system("cp -r Source/Inputs " + RunDir)
-# # Copy Input Data
-# os.system("cp -r Source/ObsData " + RunDir)
+
 #
 
 # # Copy DAKOTA input file
