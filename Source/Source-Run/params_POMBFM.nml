@@ -1,19 +1,18 @@
-/bin/cat << EOF >params_POMBFM.nml
 &Params_POMBFM
 H       =  150.
-DTI     =  3600.
+DTI     =  600.
 ALAT    =  45.
 IDIAGN  =  1
-IDAYS   =  30
+IDAYS   =  1080
 SMOTH   =  0.1
 IHOTST  =  0
 KL1     =  2
 KL2     =  150
 SAVEF   =  1
-NRT_o2o =  $1
-NRT_n1p =  $2
-NRT_n3n =  $3
-NRT_n4n =  $4
+NRT_o2o =  {NRT_o2o}
+NRT_n1p =  {NRT_n1p}
+NRT_n3n =  {NRT_n3n}
+NRT_n4n =  {NRT_n4n}
 NBCT    =  2
 NBCS    =  1
 NBCBFM  =  1
@@ -27,5 +26,3 @@ SRT     =  1
 UPPERH  =  5.0
 SSRT    =  5.68
 /
-
-EOF
