@@ -28,7 +28,7 @@ PN, PC = np.load('PControls.npy')
 NV, LB, UB = np.load('PValues.npy')
 
 # Run Parameter Values
-RV = NV
+RV = np.copy(NV)
 
 Norm_Val = np.array([0.5,0.6,0.4,0.3,0.2])
 
