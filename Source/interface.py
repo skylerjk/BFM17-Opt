@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import sys
 
 # Namelist Dictionary defines which parameters are in a given namelist file
 Namelist_Dictionary = {
@@ -22,6 +23,11 @@ def find_key(Dict,val):
       Search_List = Dict[key]
       if val in Search_List:
         return key
+
+# Control Flag for Initial Evaluation
+Flag_IE = eval(sys.argv[1])
+# Control Flag for Normalization
+Flag_NO = eval(sys.argv[2])
 
 # Load the Optimization Control Information
 PN, PC = np.load('../PControls.npy')
@@ -61,4 +67,4 @@ for i, prm in enumerate(PN):
 os.system("./pom.exe")
 
 # Calculate Objective function
-exec(open("CalcObjective.py").read())
+os.system("python3 CalcObjective.py False " + str(Flag_NO))

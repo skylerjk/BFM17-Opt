@@ -1,4 +1,15 @@
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+#                       Parameter Estimation Study Controls                    #
+#                       =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=                    #
+# Do not change the order of the parameters below, do not remove the header    #
+# string.                                                                      #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Name of the directory for running study
+RunDir = PE-Runs/OSSE-1D-05Prm-17StVr-FRCGwNorm
+# Normalize Objective Function Switch (true/false) :
+NormObj = True
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 #                      BFM17 Parameter List and Controls                       #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 ParameterList (DO NOT CHANGE ORDER, OR ADD LINES)

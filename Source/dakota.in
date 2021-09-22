@@ -35,7 +35,7 @@ variables
 interface
   fork
     # Interface script between DAKOTA and model
-    analysis_driver = 'python3 interface.py'
+    analysis_driver = 'python3 interface.py False NORM_CONTROL'
     # Parameter input file - DAKOTA to model
     parameters_file = 'params.in'
     # Objective function value - model to DAKOTA

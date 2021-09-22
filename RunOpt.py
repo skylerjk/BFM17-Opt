@@ -34,9 +34,20 @@ LB = np.zeros(51)
 # Parameter Upper Bound
 UB = np.zeros(51)
 
-with open('OptCase2.in') as readFile:
+with open('OptCase.in') as readFile:
     for i, line in enumerate(readFile):
-        if i >= 4:
+        if i == 7:
+            # Set Optimization Run Directory in OptCase.in
+            Option_Cntrl = line.split()
+            RunDir = Option_Cntrl[2]
+
+
+        if i == 9:
+            # Control whether objective funct. is normalized in OptCase.in
+            Option_Cntrl = line.split()
+            Flag_Norm = eval(Option_Cntrl[2])
+
+        if i >= 15:
             Parameter_Entry = line.split()
             # print(line)
             # print(Parameter_Entry)
@@ -46,37 +57,53 @@ with open('OptCase2.in') as readFile:
             # Assign Parameter Control
             PC.append(eval(Parameter_Entry[2]))
             # Assign Parameter Nominal Value
-            NV[i-27] = Parameter_Entry[3]
+            NV[i-15] = Parameter_Entry[3]
             # Assign Parameter Lower Boundary
-            LB[i-27] = Parameter_Entry[4]
+            LB[i-15] = Parameter_Entry[4]
             # Assign Parameter Upper Boundary
-            UB[i-27] = Parameter_Entry[5]
+            UB[i-15] = Parameter_Entry[5]
+
+Home = os.getcwd()
 
 # Calculate the Normalized Nominal Values
 Norm_Val = (NV - LB) / (UB - LB)
+Pert_Val = np.copy(Norm_Val)
 
-# Optimization Run Directory
-RunDir = 'PE-Runs/Opt-TEST'
+# Generate perturbed set of normalized values
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+for ind in range(len(Pert_Val)):
+    if PC[ind]:
+        Pert_Val[ind] = Pert_Val[ind] + 0.1
+
+    # Correct val if perturbation moved normalized value out of 0 to 1 range
+    if Pert_Val[ind] > 1.0:
+        Pert_Val[ind] = Pert_Val[ind] - 1.0
+    elif Pert_Val[ind] < 0.0:
+        Pert_Val[ind] = Pert_Val[ind] + 1.0
 
 # Make Run Directory
 os.system("mkdir " + RunDir)
+# Keep copy of OptCase.in in run directory
+os.system("cp OptCase.in " + RunDir)
 
 # Compile BFM17 + POM1D
 os.system("cp -r Source/Source-BFMPOM " + RunDir + "/Config")
 
+# Compile BFM17 + POM1D, generating executable
 os.chdir(RunDir + "/Config")
 os.system("./Config_BFMPOM.sh")
-os.chdir("../../../")
+os.chdir(Home)
 
+# Create template folder for Optimization
 os.system("cp -r Source/Source-Run " + RunDir + "/Source")
 
+# Put executable in template folder
 os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 
-# Copy Input Data
+# Copy input data
 os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
 
-
-# Perform Reference Run
+# Perform Reference Model Run
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
 os.chdir(RunDir + "/RefRun")
@@ -84,21 +111,55 @@ os.chdir(RunDir + "/RefRun")
 for i, prm in enumerate(PN):
     Nml_File = find_key(Namelist_Dictionary, prm)
 
-    # Replace value of current parameter
+    # Replace of current parameter in namelist with nominal value
     os.system("sed -i '' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+
 # Run Reference Evaluation
 os.system("./pom.exe")
-os.chdir("../../../")
+os.chdir(Home)
 
-# Complete Case Set-Up
+
 # Move Reference Run to template directory
 os.system("cp " + RunDir + "/RefRun/bfm17_pom1d.nc " + RunDir + "/Source/bfm17_pom1d-ref.nc ")
-# Move interface to template directory
-os.system("cp Source/interface.py " + RunDir + "/Source")
 # Move objective function calculator to template directory
 os.system("cp Source/CalcObjective.py " + RunDir + "/Source")
+
+# Perform Initial Model Run
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+if Flag_Norm:
+    os.system("cp -r " + RunDir + "/Source " + RunDir + "/InitRun")
+    os.chdir(RunDir + "/InitRun")
+    # Writing Parameter Values to Namelists
+    for ii, prm in enumerate(PN):
+        Nml_File = find_key(Namelist_Dictionary, prm)
+
+        # Replace value of current parameter - select between pert val and nom val
+        if PC[ii]:
+            val = Pert_Val[ii] * (UB[ii] - LB[ii]) + LB[ii]
+        elif not PC[ii]:
+            val = NV[ii]
+
+        # Replace value of current parameter
+        os.system("sed -i '' \"s/{" + prm + "}/" + str(val) +"/\" " + Nml_File)
+
+    # Run Reference Evaluation
+    os.system("./pom.exe")
+    # Evaluate initial run of model for normalization
+    os.system("python3 CalcObjective.py True True")
+    # Return to Home Directory
+    os.chdir(Home)
+
+    # Move Reference Run to template directory
+    os.system("cp " + RunDir + "/InitRun/BaseCase_RMSD.npy " + RunDir + "/Source")
+
+# Complete Case Set-Up
+
+# Move interface to template directory
+os.system("cp Source/interface.py " + RunDir + "/Source")
+
 # Move DAKOTA input file to Run directory
 os.system("cp Source/dakota.in " + RunDir)
+os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dakota.in")
 
 prm_cnt = 0
 # Set Up DAKOTA input file
@@ -116,7 +177,7 @@ for ind, prm in enumerate(PN):
             InVal = InVal + 1.0
 
         os.system("sed -i '' \"/descriptors =/s/$/ \\'" + prm + "\\'/\" " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/initial_point =/s/$/ " + f"{Norm_Val[ind]:g}" + "/' " + RunDir + "/dakota.in")
+        os.system("sed -i '' '/initial_point =/s/$/ " + f"{InVal:g}" + "/' " + RunDir + "/dakota.in")
         os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
         os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
 
