@@ -3,7 +3,7 @@
 close all, clear all, clc
 
 % Set color scheme for plots
-ClrCase = 'Presentation';
+ClrCase = 'Paper';
 switch ClrCase
     case 'Paper'
         FigClr = 'w'; AxsClr = 'k'; TxtClr = 'k';
@@ -14,7 +14,7 @@ switch ClrCase
 end
 
 % % Directory Information % %
-FileLoc = '../PE-Runs/05Prm-OSSE-1D-FRCGwNorm/opt_dir/PEOutput.dat';
+FileLoc = '../PE-Runs/OSSE-1D-05Prm-17StVr-FRCG/PEOutput.dat';
 
 % - Parameters Being Tested
 prmtrs = {'p_PAR','p_eps0', 'p_sum','z_sum','z_paPPY'};
@@ -64,7 +64,7 @@ ttl = title('Optimization of RMSD'); ttl.Color = TxtClr;
 ylabel('Objective Function, RMSD'), xlabel('Objective Function Evaluation')
 
 
-ax = gca; ax.YScale='log'
+ax = gca; ax.YScale='log';
 ax.Color = FigClr; ax.XColor = AxsClr; ax.YColor = AxsClr;
 ax.Box = 'on'; ax.FontName = 'Times';
 
@@ -103,7 +103,7 @@ ax.Box = 'on'; ax.FontName = 'Times';
 
 colormap cool
 cb = colorbar;
-cb.Limits =[0.,1.], cb.Ticks=[0,1]; cb.TickLabels = {'Beginning','End'};
+cb.Limits =[0.,1.]; cb.Ticks=[0,1]; cb.TickLabels = {'Beginning','End'};
 cb.Color = TxtClr; cb.Location ='southoutside';
 
 % for prm = 1:length(prmtrs)
