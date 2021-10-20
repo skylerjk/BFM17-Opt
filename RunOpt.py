@@ -41,7 +41,6 @@ with open('OptCase.in') as readFile:
             Option_Cntrl = line.split()
             RunDir = Option_Cntrl[2]
 
-
         if i == 9:
             # Control whether objective funct. is normalized in OptCase.in
             Option_Cntrl = line.split()
@@ -75,21 +74,22 @@ for ind in range(len(Pert_Val)):
     if PC[ind]:
         Pert_Val[ind] = Pert_Val[ind] + 0.1
 
-    # Correct val if perturbation moved normalized value out of 0 to 1 range
-    if Pert_Val[ind] > 1.0:
-        Pert_Val[ind] = Pert_Val[ind] - 1.0
-    elif Pert_Val[ind] < 0.0:
-        Pert_Val[ind] = Pert_Val[ind] + 1.0
+        # Correct val if perturbation moved normalized value out of 0 to 1 range
+        if Pert_Val[ind] > 1.0:
+            Pert_Val[ind] = Pert_Val[ind] - 1.0
+        elif Pert_Val[ind] < 0.0:
+            Pert_Val[ind] = Pert_Val[ind] + 1.0
 
 # Make Run Directory
 os.system("mkdir " + RunDir)
+
 # Keep copy of OptCase.in in run directory
 os.system("cp OptCase.in " + RunDir)
 
-# Compile BFM17 + POM1D
+# Copy source code to compile BFM17 + POM1D
 os.system("cp -r Source/Source-BFMPOM " + RunDir + "/Config")
 
-# Compile BFM17 + POM1D, generating executable
+# Compile BFM17 + POM1D, generate executable
 os.chdir(RunDir + "/Config")
 os.system("./Config_BFMPOM.sh")
 os.chdir(Home)
@@ -171,6 +171,7 @@ for ind, prm in enumerate(PN):
 
     if PC[ind]:
         InVal = Norm_Val[ind] + 0.1
+
         if InVal > 1.0:
             InVal = InVal - 1.0
         elif InVal < 0.0:
@@ -191,4 +192,4 @@ np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
 
 # Run Dakota
 os.chdir(RunDir)
-os.system("dakota -i dakota.in -o output.out -e error.err")
+os.system("time dakota -i dakota.in -o output.out -e error.err")
