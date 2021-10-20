@@ -14,9 +14,10 @@ switch ClrCase
 end
 
 % % Directory Information % %
-% FileLoc = '../PE-Runs/OSSE-1D-05Prm-17StVr-FRCGwNorm-dt400-PrmSet1-10percpert/PEOutput.dat';
-FileLoc = '../PE-Runs/OSSE-1D-05Prm-17StVr-FRCG-dt400-PrmSet8-10percpert/PEOutput.dat';
-% % %% Parameter Set 1 %%
+FileLoc_ref = '../PE-Runs/OSSE-1D-05Prm-17StVr-FRCGwNorm-dt400-PrmSet6/PEOutput.dat';
+FileLoc_tst = '../PE-Runs/OSSE-1D-05Prm-17StVr-FRCGwNorm-dt3600-PrmSet6/PEOutput.dat';
+
+% %% Parameter Set 1 %%
 % % - Parameters Being Tested
 % prmtrs = {'p_PAR','p_eps0', 'p_sum','z_sum','z_paPPY'};
 % % - Parameter reference values
@@ -46,56 +47,66 @@ FileLoc = '../PE-Runs/OSSE-1D-05Prm-17StVr-FRCG-dt400-PrmSet8-10percpert/PEOutpu
 % % - Parameter reference values
 % prmval = [0.5,0.2,0.5,0.25,0.258];
 
-% %% Parameter Set 6 %%
-% % - Parameters Being Tested
-% prmtrs = {'p_PAR','p_sum','p_srs','z_sum','z_srs'};
-% % - Parameter reference values
-% prmval = [0.5,0.2,0.5,0.25,0.25];
-
-% %% Parameter Set 7 %%
-% % - Parameters Being Tested
-% prmtrs = {'p_PAR','z_sum','z_pu','z_paPPY','p_sR1O3'};
-% % - Parameter reference values
-% prmval = [0.5,0.25,0.5,1.0,0.0];
-
-%% Parameter Set 8 %%
+%% Parameter Set 6 %%
 % - Parameters Being Tested
-prmtrs = {'p_pe_R1c','p_qpcPPY','z_sd','p_sR6O3','p_sR1O3'};
+prmtrs = {'p_PAR','p_sum','p_srs','z_sum','z_srs'};
 % - Parameter reference values
-prmval = [0.2,0.546,0.5,0.125,0.0];
-
-% %% Parameter Set 9 %%
-% % - Parameters Being Tested
-% prmtrs = {'p_eps0','p_qpcPPY','z_sd','p_sR6O3','p_sR1O3'};
-% % - Parameter reference values
-% prmval = [0.567,0.546,0.5,0.125,0.0];
+prmval = [0.5,0.2,0.5,0.25,0.25];
 
 % Optimization output data formatting parameters
 delimiter = ' ';
 hdr_lines = 1;
 
-temp = importdata(FileLoc,delimiter,hdr_lines);
-data = temp.data;
+temp = importdata(FileLoc_ref,delimiter,hdr_lines);
+data_ref = temp.data;
 
-[num_evl, num] = size(data);
+[num_evl_ref, num] = size(data_ref);
 num_prm = num - 1; 
 % 
-prm_val = data(:,1:num_prm);
-obj_val = data(:,num);
+prm_val_ref = data_ref(:,1:num_prm);
+obj_val_ref = data_ref(:,num);
 
 % Color Gradient for the progression of Optimization
-clrgrd=[1:num_evl]/num_evl;
+clrgrd_ref=[1:num_evl_ref]/num_evl_ref;
+
+clear temp num num_prm
+%%
+temp = importdata(FileLoc_tst,delimiter,hdr_lines);
+data_tst = temp.data; clear temp
+
+[num_evl_tst, num] = size(data_tst);
+num_prm = num - 1; 
+ 
+prm_val_tst = data_tst(:,1:num_prm);
+obj_val_tst = data_tst(:,num);
+
+% Color Gradient for the progression of Optimization
+clrgrd_tst=[1:num_evl_tst]/num_evl_tst;
+
+clear temp num
 
 %%%%%%%%%%%%%%%%
-% % Figure 1 % %
+%%  Figure 1  %%
 %%%%%%%%%%%%%%%%
 f1 = figure(1);  f1.Color = FigClr; f1.InvertHardcopy = 'off';
-scatter([1:length(obj_val)],obj_val,[45],clrgrd,'filled')
+subplot(1,2,1)
+scatter([1:length(obj_val_ref)],obj_val_ref,[45],clrgrd_ref,'filled')
 
-ttl = title('Optimization of RMSD'); ttl.Color = TxtClr;
+ttl = title('dt = 400'); ttl.Color = TxtClr;
 ylabel('Objective Function, RMSD'), xlabel('Objective Function Evaluation')
-%ylim([1 51])
-% 
+
+ax = gca;
+ax.Color = FigClr; ax.XColor = AxsClr; ax.YColor = AxsClr;
+ax.Box = 'on'; ax.FontName = 'Times';
+
+colormap cool
+
+subplot(1,2,2)
+scatter([1:length(obj_val_tst)],obj_val_tst,[45],clrgrd_tst,'filled')
+
+ttl = title('dt = 3600'); ttl.Color = TxtClr; 
+xlabel('Objective Function Evaluation'); 
+
 ax = gca;
 ax.Color = FigClr; ax.XColor = AxsClr; ax.YColor = AxsClr;
 ax.Box = 'on'; ax.FontName = 'Times';
@@ -103,10 +114,10 @@ ax.Box = 'on'; ax.FontName = 'Times';
 colormap cool
 
 %%%%%%%%%%%%%%%%
-% % Figure 2 % % 
+%%  Figure 2  %% 
 %%%%%%%%%%%%%%%%
 f2 = figure(2);  f2.Color = FigClr; f2.InvertHardcopy = 'off';
-scatter([1:length(obj_val)],obj_val,[45],clrgrd,'filled')
+scatter([1:length(obj_val_ref)],obj_val_ref,[45],clrgrd_ref,'filled')
 
 ttl = title('Optimization of RMSD'); ttl.Color = TxtClr;
 ylabel('Objective Function, RMSD'), xlabel('Objective Function Evaluation')
@@ -133,15 +144,22 @@ colormap cool
 % ax.Box = 'on'; ax.FontName = 'Times';
 
 %%%%%%%%%%%%%%%%
-% % Figure 3 % %
+%%  Figure 3  %%
 %%%%%%%%%%%%%%%%
 f3 = figure(3); f3.Color = FigClr; f3.InvertHardcopy = 'off';
 for i=1:num_prm
-    Diff_final = prm_val(:,i) - prmval(i) ;
-    scatter(i*ones(1,num_evl),Diff_final,[45],clrgrd,'filled'), hold on
-
+    Diff_final = prm_val_ref(:,i) - prmval(i) ;
+    scatter(i*ones(1,length(clrgrd_ref)),Diff_final,[45],clrgrd_ref,'filled'), hold on
 end 
-ttl = title('OSSE of 5 Parameters : Set 8 for Unnormalized Obj. Func.'); ttl.Color = TxtClr;
+
+clear Diff_final
+
+for i=1:num_prm
+    Diff_final = prm_val_tst(:,i) - prmval(i) ;
+    scatter(i*ones(1,length(clrgrd_tst))+0.25,Diff_final,[45],clrgrd_tst,'filled'), hold on
+end
+
+ttl = title('OSSE of 5 Parameters : Set 6'); ttl.Color = TxtClr;
 xlabel('Parameter Index'), ylabel('Diff [ p_i - p_{o} ]')
 line([0 6],[0 0]), xlim([0 6])
 % 
