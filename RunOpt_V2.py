@@ -1,5 +1,25 @@
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Script : RunOpt_V2.py                                                        #
+#                                                                              #
+# Description :                                                                #
+# This script produces
+#                                                                              #
+# Development History :                                                        #
+# Skyler Kern - October 20, 2021                                               #
+#                                                                              #
+# Institution :                                                                #
+# This was created in support of research done in the Turbulence and Energy    #
+# Systems Laboratory (TESLa) from the Paul M. Rady Department of Mechanical    #
+# Engineering at the University of Colorado Boulder.                           #
+#                                                                              #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+
+# Preface : Load Modules
 import numpy as np
 import os
+
+# Code :
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
 # Namelist Dictionary defines which parameters are in a given namelist file
 Namelist_Dictionary = {
@@ -14,7 +34,9 @@ Namelist_Dictionary = {
   'params_POMBFM.nml' : ['NRT_o2o', 'NRT_n1p', 'NRT_n3n', 'NRT_n4n']
 }
 
-# Function to return Key for parameter Dictionary
+# Define Function : find_key
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Function returns the Key for a given value from the dictionary
 def find_key(Dict,val):
     key_list = list(Dict.keys())
 
@@ -22,6 +44,7 @@ def find_key(Dict,val):
       Search_List = Dict[key]
       if val in Search_List:
         return key
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
 # Parameter Names
 PN = []
@@ -46,9 +69,14 @@ with open('OptCase.in') as readFile:
         if i == 9:
             # Control whether objective funct. is normalized in OptCase.in
             Option_Cntrl = line.split()
+            OptMthd = Option_Cntrl[2]
+
+        if i == 11:
+            # Control whether objective funct. is normalized in OptCase.in
+            Option_Cntrl = line.split()
             Flag_Norm = eval(Option_Cntrl[2])
 
-        if i >= 15:
+        if i >= 17:
             Parameter_Entry = line.split()
             # print(line)
             # print(Parameter_Entry)
@@ -58,11 +86,11 @@ with open('OptCase.in') as readFile:
             # Assign Parameter Control
             PC.append(eval(Parameter_Entry[2]))
             # Assign Parameter Nominal Value
-            NV[i-15] = Parameter_Entry[3]
+            NV[i-17] = Parameter_Entry[3]
             # Assign Parameter Lower Boundary
-            LB[i-15] = Parameter_Entry[4]
+            LB[i-17] = Parameter_Entry[4]
             # Assign Parameter Upper Boundary
-            UB[i-15] = Parameter_Entry[5]
+            UB[i-17] = Parameter_Entry[5]
 
 Home = os.getcwd()
 
@@ -70,7 +98,7 @@ Home = os.getcwd()
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 for iprm, prm_val in enumerate(NV):
     if PC[iprm]:
-        PV[iprm] = NV[iprm] + 0.05 * NV[iprm]
+        PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
 
         # Correct val if perturbation moved normalized value out of 0 to 1 range
         if PV[iprm] > UB[iprm]:
@@ -163,11 +191,23 @@ os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dako
 
 # Set Up DAKOTA input file
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+if OptMthd == 'conmin':
+    #  DAKOTA Controls setting up Optimization Method
+    os.system("sed -i '' 's/ DI_MTHD/conmin_frcg/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_MI/max_iterations = 1000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_FE/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
 
-#  DAKOTA Controls setting up Optimization Method
-os.system("sed -i '' 's/ DI_MTHD/conmin_frcg/' " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/DI_MI/max_iterations = 1000/' " + RunDir + "/dakota.in")
+elif OptMthd == 'cobyla':
+    #  DAKOTA Controls setting up Optimization Method
+    os.system("sed -i '' 's/ DI_MTHD/coliny_cobyla/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_CT/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_MI/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 50000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_SD/seed = 101/' " + RunDir + "/dakota.in")
+    # Turn off gradient calculation for COBYLA
+    os.system("sed -i '' 's/numerical_gradients/no_gradients/' " + RunDir + "/dakota.in")
 
 # Add selected parameters to list of optimization parameters
 prm_cnt = 0

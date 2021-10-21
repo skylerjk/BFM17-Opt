@@ -21,6 +21,9 @@ method
   DI_MTHD
     DI_CT
     DI_MI
+    DI_FE
+    DI_SD
+
 
 model
   single
