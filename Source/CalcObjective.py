@@ -13,14 +13,8 @@ Num_Days = 30
 Sim_Days = 30
 Num_SVar = len(State_Variables)
 
-# Control Flag for Initial Evaluation
-Flag_IE = eval(sys.argv[1])
 # Control Flag for Normalization
-Flag_NO = eval(sys.argv[2])
-
-# If initial evaluation, do not normalize RMSD values
-if Flag_IE:
-    Flag_NO = False
+Flag_NO = eval(sys.argv[1])
 
 # Location of BFM17-POM1D results
 NC_Ref_File_Location = 'bfm17_pom1d-ref.nc'
@@ -52,21 +46,17 @@ N = float(Num_Days*depth)
 RMSD = np.sqrt(np.sum(np.sum((BGC_Tst_Data - BGC_Ref_Data)**2, axis = 2), axis = 1)/N)
 
 if Flag_NO:
-    # Load RMSD values from base case evaluation
-    RMSD_BaseCase = np.load('BaseCase_RMSD.npy')
+    # Load normalization values from nominal case
+    NormVals = np.load('NormVals.npy')
 
     # Sum normalized RMSD values to calculate objective function
-    obj = np.sum(RMSD/RMSD_BaseCase)
+    obj = np.sum(RMSD/NormVals)
 
 else:
     # Sum RMSD values to calculate objective function
     obj = np.sum(RMSD)
 
 # How to output data
-if Flag_IE:
-    np.save('BaseCase_RMSD',RMSD)
-
-else:
-    ofile = open('result.out','w')
-    ofile.write(repr(obj))
-    ofile.close()
+ofile = open('result.out','w')
+ofile.write(repr(obj))
+ofile.close()

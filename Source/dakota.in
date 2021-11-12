@@ -23,6 +23,8 @@ method
     DI_MI
     DI_FE
     DI_SD
+    DI_ID
+
 
 
 model
@@ -38,7 +40,7 @@ variables
 interface
   fork
     # Interface script between DAKOTA and model
-    analysis_driver = 'python3 interface.py False NORM_CONTROL'
+    analysis_driver = 'python3 interface.py NORM_CONTROL'
     # Parameter input file - DAKOTA to model
     parameters_file = 'params.in'
     # Objective function value - model to DAKOTA
@@ -47,7 +49,7 @@ interface
     work_directory
       named 'OptEval'
       directory_tag
-#      directory_save
+    # directory_save
     # Files need to run model
     copy_files = 'Source/*'
     # Defines parameter output format
@@ -56,4 +58,7 @@ interface
 responses
   objective_functions = 1
   numerical_gradients
+    DI_MS
+    DI_IT
+    DI_GS
   no_hessian

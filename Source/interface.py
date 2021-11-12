@@ -24,10 +24,8 @@ def find_key(Dict,val):
       if val in Search_List:
         return key
 
-# Control Flag for Initial Evaluation
-Flag_IE = eval(sys.argv[1])
 # Control Flag for Normalization
-Flag_NO = eval(sys.argv[2])
+Flag_NO = eval(sys.argv[1])
 
 # Load the Optimization Control Information
 PN, PC = np.load('../PControls.npy')
@@ -50,10 +48,18 @@ with open('params.in') as readFile:
             # Parameter Value - Normalized
             Norm_Val[i-1] = Parameter_Entry[3]
 
+# Normalization scheme
+PrmNrm_Mthd = 1
+
 cnt = 0
 for prm in range(51):
     if eval(PC[prm]):
-        RV[prm] = Norm_Val[cnt] * (UB[prm]-LB[prm]) + LB[prm]
+        if PrmNrm_Mthd == 1:
+            RV[prm] = Norm_Val[cnt] * (UB[prm]-LB[prm]) + LB[prm]
+
+        if PrmNrm_Mthd == 2:
+            RV[prm] = Norm_Val[cnt] * NV[prm]
+
         cnt += 1
 
 # Writing Parameter Values to Namelists
@@ -67,4 +73,4 @@ for i, prm in enumerate(PN):
 os.system("./pom.exe")
 
 # Calculate Objective function
-os.system("python3 CalcObjective.py False " + str(Flag_NO))
+os.system("python3 CalcObjective.py " + str(Flag_NO))

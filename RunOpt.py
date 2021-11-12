@@ -1,5 +1,25 @@
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Script : RunOpt_V3.py                                                        #
+#                                                                              #
+# Description :                                                                #
+# This script produces
+#                                                                              #
+# Development History :                                                        #
+# Skyler Kern - October 20, 2021                                               #
+#                                                                              #
+# Institution :                                                                #
+# This was created in support of research done in the Turbulence and Energy    #
+# Systems Laboratory (TESLa) from the Paul M. Rady Department of Mechanical    #
+# Engineering at the University of Colorado Boulder.                           #
+#                                                                              #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+
+# Preface : Load Modules
 import numpy as np
+import random
 import os
+# Code :
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
 # Namelist Dictionary defines which parameters are in a given namelist file
 Namelist_Dictionary = {
@@ -14,7 +34,9 @@ Namelist_Dictionary = {
   'params_POMBFM.nml' : ['NRT_o2o', 'NRT_n1p', 'NRT_n3n', 'NRT_n4n']
 }
 
-# Function to return Key for parameter Dictionary
+# Define Function : find_key
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Function returns the Key for a given value from the dictionary
 def find_key(Dict,val):
     key_list = list(Dict.keys())
 
@@ -22,6 +44,8 @@ def find_key(Dict,val):
       Search_List = Dict[key]
       if val in Search_List:
         return key
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+
 
 # Parameter Names
 PN = []
@@ -29,6 +53,8 @@ PN = []
 PC = []
 # Parameter Nominal Values
 NV = np.zeros(51)
+# Parameter Perturbed Values
+PV = np.zeros(51)
 # Parameter Lower Bound
 LB = np.zeros(51)
 # Parameter Upper Bound
@@ -40,6 +66,11 @@ with open('OptCase.in') as readFile:
             # Set Optimization Run Directory in OptCase.in
             Option_Cntrl = line.split()
             RunDir = Option_Cntrl[2]
+
+        # if i == 9:
+        #     # Control whether objective funct. is normalized in OptCase.in
+        #     Option_Cntrl = line.split()
+        #     OptMthd = Option_Cntrl[2]
 
         if i == 9:
             # Control whether objective funct. is normalized in OptCase.in
@@ -64,21 +95,44 @@ with open('OptCase.in') as readFile:
 
 Home = os.getcwd()
 
-# Calculate the Normalized Nominal Values
-Norm_Val = (NV - LB) / (UB - LB)
-Pert_Val = np.copy(Norm_Val)
-
 # Generate perturbed set of normalized values
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-for ind in range(len(Pert_Val)):
-    if PC[ind]:
-        Pert_Val[ind] = Pert_Val[ind] + 0.1
+for iprm, prm_val in enumerate(NV):
+    if PC[iprm]:
+        PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
 
         # Correct val if perturbation moved normalized value out of 0 to 1 range
-        if Pert_Val[ind] > 1.0:
-            Pert_Val[ind] = Pert_Val[ind] - 1.0
-        elif Pert_Val[ind] < 0.0:
-            Pert_Val[ind] = Pert_Val[ind] + 1.0
+        if PV[iprm] > UB[iprm]:
+            # PV[iprm] = NV[iprm] - 0.05 * NV[iprm]
+            PV[iprm] = UB[iprm]
+        elif PV[iprm] < LB[iprm]:
+            # PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
+            PV[iprm] = LB[iprm]
+
+    else:
+        PV[iprm] = NV[iprm]
+
+# Calculate the Normalized Nominal Values
+# NV_Norm = (NV - LB) / (UB - LB)
+
+PrmNrm_Mthd = 1
+if PrmNrm_Mthd == 1:
+    # Normalization method - range 0 to 1
+    PV_Norm = (PV - LB) / (UB - LB)
+
+elif PrmNrm_Mthd == 2:
+    # Normalization method - normalize by nominal value
+    PV_Norm = PV / NV
+
+# Alternative Perturbation For Selected parameters
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# Calculate normalized nominal parameter values
+# PV_Norm = (NV - LB) / (UB - LB)
+#
+# Randomly generaterating perturbed normalized parameter values
+# for iprm, prm_val in enumerate(NV):
+#    if PC[iprm]:
+#        PV_Norm[iprm] = round(random.uniform(0,1),4)
 
 # Make Run Directory
 os.system("mkdir " + RunDir)
@@ -103,88 +157,90 @@ os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 # Copy input data
 os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
 
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # Perform Reference Model Run
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Generate reference run directory (RefRun)
 os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
+# Copy script for Calculating normalization values
+os.system("cp Source/CalcNormVals.py " + RunDir + "/RefRun")
+
+# Input nominal set of parameter values
 os.chdir(RunDir + "/RefRun")
 # Writing Parameter Values to Namelists
 for i, prm in enumerate(PN):
     Nml_File = find_key(Namelist_Dictionary, prm)
-
     # Replace of current parameter in namelist with nominal value
     os.system("sed -i '' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
 
 # Run Reference Evaluation
 os.system("./pom.exe")
-os.chdir(Home)
-
 
 # Move Reference Run to template directory
-os.system("cp " + RunDir + "/RefRun/bfm17_pom1d.nc " + RunDir + "/Source/bfm17_pom1d-ref.nc ")
-# Move objective function calculator to template directory
-os.system("cp Source/CalcObjective.py " + RunDir + "/Source")
+os.system("cp bfm17_pom1d.nc ../Source/bfm17_pom1d-ref.nc ")
 
-# Perform Initial Model Run
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 if Flag_Norm:
-    os.system("cp -r " + RunDir + "/Source " + RunDir + "/InitRun")
-    os.chdir(RunDir + "/InitRun")
-    # Writing Parameter Values to Namelists
-    for ii, prm in enumerate(PN):
-        Nml_File = find_key(Namelist_Dictionary, prm)
-
-        # Replace value of current parameter - select between pert val and nom val
-        if PC[ii]:
-            val = Pert_Val[ii] * (UB[ii] - LB[ii]) + LB[ii]
-        elif not PC[ii]:
-            val = NV[ii]
-
-        # Replace value of current parameter
-        os.system("sed -i '' \"s/{" + prm + "}/" + str(val) +"/\" " + Nml_File)
-
-    # Run Reference Evaluation
-    os.system("./pom.exe")
-    # Evaluate initial run of model for normalization
-    os.system("python3 CalcObjective.py True True")
-    # Return to Home Directory
-    os.chdir(Home)
-
+    # Calculate the values for normalizing objective function
+    os.system("python3 CalcNormVals.py")
     # Move Reference Run to template directory
-    os.system("cp " + RunDir + "/InitRun/BaseCase_RMSD.npy " + RunDir + "/Source")
+    os.system("cp NormVals.npy ../Source")
+
+# Return to home directory
+os.chdir(Home)
+
+# End of Reference Run
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+
+# Move objective function calculator to template directory
+os.system("cp Source/CalcObjective.py " + RunDir + "/Source/CalcObjective.py")
 
 # Complete Case Set-Up
 
 # Move interface to template directory
-os.system("cp Source/interface.py " + RunDir + "/Source")
+os.system("cp Source/interface.py " + RunDir + "/Source/interface.py")
 
 # Move DAKOTA input file to Run directory
-os.system("cp Source/dakota.in " + RunDir)
+os.system("cp Source/dakota.in " + RunDir + "/dakota.in")
 os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dakota.in")
 
-prm_cnt = 0
+
 # Set Up DAKOTA input file
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# DAKOTA Controls for input file Method Block
+os.system("sed -i '' 's/ DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
+os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
+# DAKOTA Controls for input file Response Block
+os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.00001/' " + RunDir + "/dakota.in")
+
+
+#
+# Done Inputting DAKOTA Optimization Method Controls
+#
+
+# Add selected parameters to list of optimization parameters
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+prm_cnt = 0
 for ind, prm in enumerate(PN):
-    #  DAKOTA Controls setting up Optimization Method
-    os.system("sed -i '' 's/ DI_MTHD/conmin_frcg/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_MI/max_iterations = 1000/' " + RunDir + "/dakota.in")
-
     if PC[ind]:
-        InVal = Norm_Val[ind] + 0.1
-
-        if InVal > 1.0:
-            InVal = InVal - 1.0
-        elif InVal < 0.0:
-            InVal = InVal + 1.0
-
         os.system("sed -i '' \"/descriptors =/s/$/ \\'" + prm + "\\'/\" " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/initial_point =/s/$/ " + f"{InVal:g}" + "/' " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
+        os.system("sed -i '' '/initial_point =/s/$/ " + f"{PV_Norm[ind]:g}" + "/' " + RunDir + "/dakota.in")
+        if OptMthd != 'optpp':
+            os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
+            os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
 
         prm_cnt +=1
 
 os.system("sed -i '' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDir + "/dakota.in")
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# Done setting up dakota.in                                     #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 # Output Information for interface.py
 np.save(RunDir + "/PControls",np.array([PN,PC]))
