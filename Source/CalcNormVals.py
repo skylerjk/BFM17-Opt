@@ -1,28 +1,30 @@
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-# Script : CalcNormVals.py                                                #
-#                                                                         #
-# Description :                                                           #
-# This script produces a numpy binary of 17 values for the 17 state       #
-# variable fields which is used to normalize the root mean squared error  #
-# as part of the objective function during an optimization performed as   #
-# part of a parameter estimation routine.                                 #
-#                                                                         #
-# Developed :                                                             #
-# Skyler Kern - October 20, 2021                                          #
-#                                                                         #
-# Institution :                                                           #
-# This was created in support of research done in the Turbulence and      #
-# Energy Systems Laboratory (TESLa) from the Paul M. Rady Department of   #
-# Mechanical Engineering at the University of Colorado Boulder.           #
-#                                                                         #
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Script : CalcNormVals.py                                                     #
+#                                                                              #
+# Description :                                                                #
+# This script produces a numpy binary of 17 values for the 17 state            #
+# variable fields which is used to normalize the root mean squared error       #
+# as part of the objective function during an optimization performed as        #
+# part of a parameter estimation routine.                                      #
+#                                                                              #
+# Developed :                                                                  #
+# Skyler Kern - October 20, 2021                                               #
+#                                                                              #
+# Institution :                                                                #
+# This was created in support of research done in the Turbulence and Energy    #
+# Systems Laboratory (TESLa) from the Paul M. Rady Department of Mechanical    #
+# Engineering at the University of Colorado Boulder.                           #
+#                                                                              #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
-# Import modules
+# Preface : Import Modules
 import numpy as np
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 import sys
 
+# Main Code
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # List of State Variables of interest
 State_Variables = ['P2l','P2c','P2n','P2p','Z5c','Z5n','Z5p','R1c','R1n','R1p','R6c','R6n','R6p','N1p','N3n','N4n','O2o']
 

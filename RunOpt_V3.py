@@ -1,5 +1,24 @@
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Script : RunOpt_V3.py                                                        #
+#                                                                              #
+# Description :                                                                #
+# This script produces
+#                                                                              #
+# Development History :                                                        #
+# Skyler Kern - October 20, 2021                                               #
+#                                                                              #
+# Institution :                                                                #
+# This was created in support of research done in the Turbulence and Energy    #
+# Systems Laboratory (TESLa) from the Paul M. Rady Department of Mechanical    #
+# Engineering at the University of Colorado Boulder.                           #
+#                                                                              #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+
+# Preface : Load Modules
 import numpy as np
 import os
+# Code :
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
 # Namelist Dictionary defines which parameters are in a given namelist file
 Namelist_Dictionary = {
@@ -14,7 +33,9 @@ Namelist_Dictionary = {
   'params_POMBFM.nml' : ['NRT_o2o', 'NRT_n1p', 'NRT_n3n', 'NRT_n4n']
 }
 
-# Function to return Key for parameter Dictionary
+# Define Function : find_key
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Function returns the Key for a given value from the dictionary
 def find_key(Dict,val):
     key_list = list(Dict.keys())
 
@@ -22,6 +43,8 @@ def find_key(Dict,val):
       Search_List = Dict[key]
       if val in Search_List:
         return key
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+
 
 # Parameter Names
 PN = []
@@ -46,9 +69,14 @@ with open('OptCase.in') as readFile:
         if i == 9:
             # Control whether objective funct. is normalized in OptCase.in
             Option_Cntrl = line.split()
+            OptMthd = Option_Cntrl[2]
+
+        if i == 11:
+            # Control whether objective funct. is normalized in OptCase.in
+            Option_Cntrl = line.split()
             Flag_Norm = eval(Option_Cntrl[2])
 
-        if i >= 15:
+        if i >= 17:
             Parameter_Entry = line.split()
             # print(line)
             # print(Parameter_Entry)
@@ -58,11 +86,11 @@ with open('OptCase.in') as readFile:
             # Assign Parameter Control
             PC.append(eval(Parameter_Entry[2]))
             # Assign Parameter Nominal Value
-            NV[i-15] = Parameter_Entry[3]
+            NV[i-17] = Parameter_Entry[3]
             # Assign Parameter Lower Boundary
-            LB[i-15] = Parameter_Entry[4]
+            LB[i-17] = Parameter_Entry[4]
             # Assign Parameter Upper Boundary
-            UB[i-15] = Parameter_Entry[5]
+            UB[i-17] = Parameter_Entry[5]
 
 Home = os.getcwd()
 
@@ -74,16 +102,26 @@ for iprm, prm_val in enumerate(NV):
 
         # Correct val if perturbation moved normalized value out of 0 to 1 range
         if PV[iprm] > UB[iprm]:
-            PV[iprm] = NV[iprm] - 0.1 * NV[iprm]
+            # PV[iprm] = NV[iprm] - 0.05 * NV[iprm]
+            PV[iprm] = UB[iprm]
         elif PV[iprm] < LB[iprm]:
-            PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
+            # PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
+            PV[iprm] = LB[iprm]
 
     else:
         PV[iprm] = NV[iprm]
 
 # Calculate the Normalized Nominal Values
 # NV_Norm = (NV - LB) / (UB - LB)
-PV_Norm = (PV - LB) / (UB - LB)
+
+PrmNrm_Mthd = 1
+if PrmNrm_Mthd == 1:
+    # Normalization method - range 0 to 1
+    PV_Norm = (PV - LB) / (UB - LB)
+
+elif PrmNrm_Mthd == 2:
+    # Normalization method - normalize by nominal value
+    PV_Norm = PV / NV
 
 # Make Run Directory
 os.system("mkdir " + RunDir)
@@ -157,24 +195,114 @@ os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dako
 
 # Set Up DAKOTA input file
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+if OptMthd == 'conmin':
+    # DAKOTA Controls for input file Method Block
+    os.system("sed -i '' 's/ DI_MTHD/conmin_frcg/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-10/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
 
-#  DAKOTA Controls setting up Optimization Method
-os.system("sed -i '' 's/ DI_MTHD/conmin_frcg/' " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/DI_MI/max_iterations = 1000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.00001/' " + RunDir + "/dakota.in")
+
+
+elif OptMthd == 'cobyla':
+    # DAKOTA Controls for input file Method Block
+    os.system("sed -i '' 's/ DI_MTHD/coliny_cobyla/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_CT/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_MI/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_ID/initial_delta = 0.15/' " + RunDir + "/dakota.in")
+    # os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
+
+    os.system("sed -i '' 's/DI_SD/seed = 101/' " + RunDir + "/dakota.in")
+    # Turn off gradient calculation for COBYLA
+    os.system("sed -i '' 's/numerical_gradients/no_gradients/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_MS/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_IT/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_GS/d' " + RunDir + "/dakota.in")
+
+elif OptMthd == 'optpp-cg':
+    # DAKOTA Controls for input file Method Block
+    os.system("sed -i '' 's/ DI_MTHD/optpp_cg/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-10/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
+
+    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.00001/' " + RunDir + "/dakota.in")
+
+    os.system("sed -i '' '/lower_bounds =/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/upper_bounds =/d' " + RunDir + "/dakota.in")
+
+elif OptMthd == 'optpp-n':
+    # DAKOTA Controls for input file Method Block
+    os.system("sed -i '' 's/ DI_MTHD/optpp_newton/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
+    # DAKOTA Controls for input file Response Block
+    os.system("sed -i '' 's/no_hessian/numerical_hessian/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.001/' " + RunDir + "/dakota.in")
+
+elif OptMthd == 'optpp-qn':
+    # DAKOTA Controls for input file Method Block
+    os.system("sed -i '' 's/ DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
+    # DAKOTA Controls for input file Response Block
+    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.00001/' " + RunDir + "/dakota.in")
+
+elif OptMthd == 'optpp-ds':
+    # DAKOTA Controls for input file Method Block
+    os.system("sed -i '' 's/ DI_MTHD/optpp_pds/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
+    # DAKOTA Controls for input file Response Block
+    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.001/' " + RunDir + "/dakota.in")
+
+#
+# Done Inputting DAKOTA Optimization Method Controls
+#
 
 # Add selected parameters to list of optimization parameters
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 prm_cnt = 0
 for ind, prm in enumerate(PN):
     if PC[ind]:
         os.system("sed -i '' \"/descriptors =/s/$/ \\'" + prm + "\\'/\" " + RunDir + "/dakota.in")
         os.system("sed -i '' '/initial_point =/s/$/ " + f"{PV_Norm[ind]:g}" + "/' " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
+        if OptMthd != 'optpp':
+            os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
+            os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
 
         prm_cnt +=1
 
 os.system("sed -i '' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDir + "/dakota.in")
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# Done setting up dakota.in                                     #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 # Output Information for interface.py
 np.save(RunDir + "/PControls",np.array([PN,PC]))

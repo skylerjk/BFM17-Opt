@@ -48,10 +48,18 @@ with open('params.in') as readFile:
             # Parameter Value - Normalized
             Norm_Val[i-1] = Parameter_Entry[3]
 
+# Normalization scheme
+PrmNrm_Mthd = 1
+
 cnt = 0
 for prm in range(51):
     if eval(PC[prm]):
-        RV[prm] = Norm_Val[cnt] * (UB[prm]-LB[prm]) + LB[prm]
+        if PrmNrm_Mthd == 1:
+            RV[prm] = Norm_Val[cnt] * (UB[prm]-LB[prm]) + LB[prm]
+
+        if PrmNrm_Mthd == 2:
+            RV[prm] = Norm_Val[cnt] * NV[prm]
+
         cnt += 1
 
 # Writing Parameter Values to Namelists

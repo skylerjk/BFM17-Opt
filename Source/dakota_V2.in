@@ -21,6 +21,11 @@ method
   DI_MTHD
     DI_CT
     DI_MI
+    DI_FE
+    DI_SD
+    DI_ID
+
+
 
 model
   single
@@ -44,7 +49,7 @@ interface
     work_directory
       named 'OptEval'
       directory_tag
-#      directory_save
+    # directory_save
     # Files need to run model
     copy_files = 'Source/*'
     # Defines parameter output format
@@ -53,4 +58,7 @@ interface
 responses
   objective_functions = 1
   numerical_gradients
+    DI_MS
+    DI_IT
+    DI_GS
   no_hessian

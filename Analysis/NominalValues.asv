@@ -1,0 +1,9 @@
+clear all, clc, clod
+
+FileIn = 'Values.txt';
+
+formatSpec = '%f %f %f'
+
+fid = fopen(FileIn,'r');
+Data = fscanf(fid,formatSpec)
+fclose(fid);

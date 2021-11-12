@@ -65,8 +65,8 @@ ax.Box = 'on'; ax.FontName = 'Times';
 % ax = gca; ax.YScale='log';
 % ax.Color = FigClr; ax.XColor = AxsClr; ax.YColor = AxsClr;
 % ax.Box = 'on'; ax.FontName = 'Times';
-% 
-% colormap cool
+
+colormap cool
 
 %%%%%%%%%%%%%%%%
 % % Figure 3 % %
