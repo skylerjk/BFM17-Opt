@@ -6,8 +6,6 @@
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # Name of the directory for running study
 RunDir = PE-Runs/OSSE-1D-14Prm-17StVr-OpQNwNorm-dt400-PrmSet14B-10percpert-Norm_RefSTD-GS1e-5-CC1e-6
-# Optimization algorithm to be used in the parameter estimation (conmin/cobyla/optpp)
-OptMthd = optpp-qn
 # Normalize Objective Function Switch (true/false) :
 NormObj = True
 

@@ -16,6 +16,7 @@
 
 # Preface : Load Modules
 import numpy as np
+import random
 import os
 # Code :
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -66,17 +67,17 @@ with open('OptCase.in') as readFile:
             Option_Cntrl = line.split()
             RunDir = Option_Cntrl[2]
 
-        if i == 9:
-            # Control whether objective funct. is normalized in OptCase.in
-            Option_Cntrl = line.split()
-            OptMthd = Option_Cntrl[2]
+        # if i == 9:
+        #     # Control whether objective funct. is normalized in OptCase.in
+        #     Option_Cntrl = line.split()
+        #     OptMthd = Option_Cntrl[2]
 
-        if i == 11:
+        if i == 9:
             # Control whether objective funct. is normalized in OptCase.in
             Option_Cntrl = line.split()
             Flag_Norm = eval(Option_Cntrl[2])
 
-        if i >= 17:
+        if i >= 15:
             Parameter_Entry = line.split()
             # print(line)
             # print(Parameter_Entry)
@@ -86,11 +87,11 @@ with open('OptCase.in') as readFile:
             # Assign Parameter Control
             PC.append(eval(Parameter_Entry[2]))
             # Assign Parameter Nominal Value
-            NV[i-17] = Parameter_Entry[3]
+            NV[i-15] = Parameter_Entry[3]
             # Assign Parameter Lower Boundary
-            LB[i-17] = Parameter_Entry[4]
+            LB[i-15] = Parameter_Entry[4]
             # Assign Parameter Upper Boundary
-            UB[i-17] = Parameter_Entry[5]
+            UB[i-15] = Parameter_Entry[5]
 
 Home = os.getcwd()
 
@@ -122,6 +123,16 @@ if PrmNrm_Mthd == 1:
 elif PrmNrm_Mthd == 2:
     # Normalization method - normalize by nominal value
     PV_Norm = PV / NV
+
+# Alternative Perturbation For Selected parameters
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# Calculate normalized nominal parameter values
+# PV_Norm = (NV - LB) / (UB - LB)
+#
+# Randomly generaterating perturbed normalized parameter values
+# for iprm, prm_val in enumerate(NV):
+#    if PC[iprm]:
+#        PV_Norm[iprm] = round(random.uniform(0,1),4)
 
 # Make Run Directory
 os.system("mkdir " + RunDir)
@@ -195,91 +206,18 @@ os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dako
 
 # Set Up DAKOTA input file
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-if OptMthd == 'conmin':
-    # DAKOTA Controls for input file Method Block
-    os.system("sed -i '' 's/ DI_MTHD/conmin_frcg/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-10/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
+# DAKOTA Controls for input file Method Block
+os.system("sed -i '' 's/ DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
+os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
+# DAKOTA Controls for input file Response Block
+os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.00001/' " + RunDir + "/dakota.in")
 
-    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.00001/' " + RunDir + "/dakota.in")
-
-
-elif OptMthd == 'cobyla':
-    # DAKOTA Controls for input file Method Block
-    os.system("sed -i '' 's/ DI_MTHD/coliny_cobyla/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_CT/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_MI/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_ID/initial_delta = 0.15/' " + RunDir + "/dakota.in")
-    # os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
-
-    os.system("sed -i '' 's/DI_SD/seed = 101/' " + RunDir + "/dakota.in")
-    # Turn off gradient calculation for COBYLA
-    os.system("sed -i '' 's/numerical_gradients/no_gradients/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_MS/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_IT/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_GS/d' " + RunDir + "/dakota.in")
-
-elif OptMthd == 'optpp-cg':
-    # DAKOTA Controls for input file Method Block
-    os.system("sed -i '' 's/ DI_MTHD/optpp_cg/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-10/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
-
-    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.00001/' " + RunDir + "/dakota.in")
-
-    os.system("sed -i '' '/lower_bounds =/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/upper_bounds =/d' " + RunDir + "/dakota.in")
-
-elif OptMthd == 'optpp-n':
-    # DAKOTA Controls for input file Method Block
-    os.system("sed -i '' 's/ DI_MTHD/optpp_newton/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
-    # DAKOTA Controls for input file Response Block
-    os.system("sed -i '' 's/no_hessian/numerical_hessian/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.001/' " + RunDir + "/dakota.in")
-
-elif OptMthd == 'optpp-qn':
-    # DAKOTA Controls for input file Method Block
-    os.system("sed -i '' 's/ DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
-    # DAKOTA Controls for input file Response Block
-    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.00001/' " + RunDir + "/dakota.in")
-
-elif OptMthd == 'optpp-ds':
-    # DAKOTA Controls for input file Method Block
-    os.system("sed -i '' 's/ DI_MTHD/optpp_pds/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
-    # DAKOTA Controls for input file Response Block
-    os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
-    os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.001/' " + RunDir + "/dakota.in")
 
 #
 # Done Inputting DAKOTA Optimization Method Controls
