@@ -9,15 +9,20 @@ TxtClr = 'k';
 lbox = 'off';
 
 % % Directory Information % %
-FileLoc = '../PE-Runs/OSSE-1D-14Prm-17StVr-OpQNwNorm-dt400-PrmSet14B-10percpert-Norm_RefSTD-GS1e-5-CC1e-10/PEOutput.dat';
+FileLoc = '../PE-Runs/OSSE-1D-14Prm-17StVr-OpQNwNorm-dt400-PrmSet14B-10percpert-Norm_RefSTD-GS1e-5-CC1e-6/PEOutput.dat';
 % FileLoc = '../PE-Runs/OSSE-1D-03Prm-17StVr-FRCGwNorm-dt400-PrmSet10A-025percpert-Norm_RefSTD/PEOutput.dat';
 % FileLoc = '../PE-Runs/OSSE-1D-03Prm-17StVr-OpCGwNorm-dt400-PrmSet10A-10percpert-Norm_RefSTD-GS1e-4-CC1e-10/PEOutput.dat';
 % FileLoc = '../PE-Runs/OSSE-1D-02Prm-17StVr-FRCGwNorm-dt400-p_qup-z_sd-10percpert-Norm_RefSTD-GS1e-4/PEOutput.dat';
 
-% Opt_Text = 'FRCG Normalized by Standard Deviation of Reference Field';
-Opt_Text = 'Ref. STD Normalized Opt++ Quasi-Newton - FD Step Size 1E-5 & Conv. Criteria 1E-10';
-% Opt_Text = 'Ref. STD Normalized Opt++ Con Grad - Alt Prm Norm - FD Step Size 1E-3 & Conv. Criteria 1E-6'; % '; %     
+% Optimization Case Description
+% Opt_Text = 'Opt++ Quasi-Newton - Obj Fnt Normalized Ref. STD - GS 1E-5 & CC 1E-10 - 5% p\_eps0 Pert.';
+% Description of Objective Function
 YL_Text = 'Total Normalized RMSD';
+
+% Opt_Text = 'FRCG Normalized by Standard Deviation of Reference Field';
+Opt_Text = 'Ref. STD Normalized Opt++ Quasi-Newton - FD Step Size 1E-5 & Conv. Criteria 1E-6';
+% Opt_Text = 'Ref. STD Normalized Opt++ Con Grad - Alt Prm Norm - FD Step Size 1E-3 & Conv. Criteria 1E-6'; % '; %     
+
 
 % FileLoc = '../PE-Runs/OSSE-1D-05Prm-17StVr-COBYLAwNorm-dt400-PrmSet10-10percpert-Norm_RefSTD-ID_25/PEOutput.dat';
 % FileLoc = '../PE-Runs/OSSE-1D-02Prm-17StVr-COBYLAwNorm-dt400-p_qup-z_sd-10percpert-Norm_RefSTD-ID_5/PEOutput.dat';

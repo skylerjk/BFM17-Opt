@@ -5,7 +5,7 @@
 # string.                                                                      #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # Name of the directory for running study
-RunDir = PE-Runs/OSSE-1D-14Prm-17StVr-OpQNwNorm-dt400-PrmSet14B-10percpert-Norm_RefSTD-GS1e-5-CC1e-6
+RunDir = PE-Runs/OSSE-1D-15Prm-17StVr-OpQNwNorm-dt400-PrmSet14-10percpert-Norm_RefSTD-GS1e-5-CC1e-6_Test2
 # Normalize Objective Function Switch (true/false) :
 NormObj = True
 

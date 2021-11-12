@@ -208,7 +208,7 @@ os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dako
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 # DAKOTA Controls for input file Method Block
 os.system("sed -i '' 's/ DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-6/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-10/' " + RunDir + "/dakota.in")
 os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
 os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
 os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
@@ -230,9 +230,9 @@ for ind, prm in enumerate(PN):
     if PC[ind]:
         os.system("sed -i '' \"/descriptors =/s/$/ \\'" + prm + "\\'/\" " + RunDir + "/dakota.in")
         os.system("sed -i '' '/initial_point =/s/$/ " + f"{PV_Norm[ind]:g}" + "/' " + RunDir + "/dakota.in")
-        if OptMthd != 'optpp':
-            os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
-            os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
+
+        os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
+        os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
 
         prm_cnt +=1
 
