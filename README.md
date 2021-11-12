@@ -1,18 +1,10 @@
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-# Project : BFM17-Opt
-#
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# Automatic Parameter Estimation of the 17 State Variable Biogeochemical Flux Model (BFM17)
 
-# # Python Run Script # #
-# # -=-=-=-=-=-=-=-=- # #
+This code corresponds to the work shown in Kern et al (still in prep) which uses DAKOTA to perform an automatic parameter estimation of the couple biophyical model BFM17 - POM1D. 
 
-# Version 1 :
-RunOpt.py was set up to run the optimization with a constant perturbation of the normalized nominal value of the parameter.
+To run the parameter estimation study, use the command: 
 
+>> python3 RunOpt.py 
 
+The current version of the run script is RunOpt_V3.py. 
 
-# Version 2 :
-RunOpt_V2.py was set up to run the optimization with a percent perturbation of the nominal value, prior to being normalized.
-
-# Version 3 :
-- RunOpt_V3.py was set up to run the optimization with alternative objective functions.
