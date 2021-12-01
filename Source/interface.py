@@ -46,19 +46,17 @@ with open('params.in') as readFile:
         if (i >= 1) and (i < 1+Num_Prms) :
             Parameter_Entry = line.split()
             # Parameter Value - Normalized
-            Norm_Val[i-1] = Parameter_Entry[3]
+            # Norm_Val[i-1] = Parameter_Entry[3]
+            if float(Parameter_Entry[3]) < 1.0e-16:
+                Norm_Val[i-1] = 0.0
+            else:
+                Norm_Val[i-1] = Parameter_Entry[3]
 
-# Normalization scheme
-PrmNrm_Mthd = 1
-
+# Calculate Parameter value for input
 cnt = 0
 for prm in range(51):
     if eval(PC[prm]):
-        if PrmNrm_Mthd == 1:
-            RV[prm] = Norm_Val[cnt] * (UB[prm]-LB[prm]) + LB[prm]
-
-        if PrmNrm_Mthd == 2:
-            RV[prm] = Norm_Val[cnt] * NV[prm]
+        RV[prm] = Norm_Val[cnt] * (UB[prm]-LB[prm]) + LB[prm]
 
         cnt += 1
 
