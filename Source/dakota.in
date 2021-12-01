@@ -18,14 +18,15 @@ environment
     tabular_data_file = 'PEOutput.dat'
 
 method
+  DI_ID
   DI_MTHD
     DI_CT
     DI_MI
     DI_FE
-    DI_SD
-    DI_ID
-
-
+    DI_LS
+    DI_MF
+    DI_MxStp
+    DI_GrdTol
 
 model
   single
@@ -58,7 +59,7 @@ interface
 responses
   objective_functions = 1
   numerical_gradients
-    DI_MS
+    DI_MthdSrc
     DI_IT
-    DI_GS
+    DI_GrdStp
   no_hessian

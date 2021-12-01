@@ -207,16 +207,36 @@ os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dako
 # Set Up DAKOTA input file
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 # DAKOTA Controls for input file Method Block
-os.system("sed -i '' 's/ DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1e-10/' " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
-os.system("sed -i '' '/DI_SD/d' " + RunDir + "/dakota.in")
+
+# Method Block ID
 os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
-# DAKOTA Controls for input file Response Block
-os.system("sed -i '' 's/DI_MS/method_source dakota/' " + RunDir + "/dakota.in")
+# os.system("sed -i '' 's/DI_ID/id_method = \\'QN\\'/' " + RunDir + "/dakota.in")
+
+# Optimization Method : Opt++ Quasi-Newton Method
+os.system("sed -i '' 's/ DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
+# Convergence Criteria :
+os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1.e-4/' " + RunDir + "/dakota.in")
+# Max Number of Iterations
+os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
+# Max Number of Model Evaluations
+os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+# Search Method
+os.system("sed -i '' 's/DI_LS/search_method value_based_line_search/' " + RunDir + "/dakota.in")
+# Merit Function : argaez_tapia, el_bakry, van_shanno
+os.system("sed -i '' 's/DI_MF/merit_function argaez_tapia/' " + RunDir + "/dakota.in")
+# Max Step Size
+os.system("sed -i '' 's/DI_MxStp/max_step = 1000.0/' " + RunDir + "/dakota.in")
+# Gradient Tolerance
+os.system("sed -i '' 's/DI_GrdTol/gradient_tolerance = 1.e-4/' " + RunDir + "/dakota.in")
+
+# DAKOTA Controls for input file Response Block - using numerically calculated gradients
+
+# Finite Differencing Routine Source
+os.system("sed -i '' 's/DI_MthdSrc/method_source dakota/' " + RunDir + "/dakota.in")
+# Gradient Approximation Approach
 os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/DI_GS/fd_gradient_step_size = 0.00001/' " + RunDir + "/dakota.in")
+# Finite Differencing Step Size
+os.system("sed -i '' 's/DI_GrdStp/fd_gradient_step_size = 1.e-5/' " + RunDir + "/dakota.in")
 
 
 #
