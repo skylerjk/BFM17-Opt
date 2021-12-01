@@ -17,6 +17,12 @@ environment
   tabular_data
     tabular_data_file = 'PEOutput.dat'
 
+BLCK_MltStrt
+  multi_start
+    MS_MP
+    MS_NS
+    MS_SD
+
 method
   DI_ID
   DI_MTHD

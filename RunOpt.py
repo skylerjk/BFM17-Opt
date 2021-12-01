@@ -67,17 +67,20 @@ with open('OptCase.in') as readFile:
             Option_Cntrl = line.split()
             RunDir = Option_Cntrl[2]
 
-        # if i == 9:
-        #     # Control whether objective funct. is normalized in OptCase.in
-        #     Option_Cntrl = line.split()
-        #     OptMthd = Option_Cntrl[2]
-
         if i == 9:
+            Option_Cntrl = line.split()
+            Exprmt = Option_Cntrl[2]
+
+        if i == 11:
             # Control whether objective funct. is normalized in OptCase.in
             Option_Cntrl = line.split()
             Flag_Norm = eval(Option_Cntrl[2])
 
-        if i >= 15:
+        if i == 13:
+            Option_Cntrl = line.split()
+            Flag_MS = eval(Option_Cntrl[2])
+
+        if i >= 19:
             Parameter_Entry = line.split()
             # print(line)
             # print(Parameter_Entry)
@@ -87,11 +90,11 @@ with open('OptCase.in') as readFile:
             # Assign Parameter Control
             PC.append(eval(Parameter_Entry[2]))
             # Assign Parameter Nominal Value
-            NV[i-15] = Parameter_Entry[3]
+            NV[i-19] = Parameter_Entry[3]
             # Assign Parameter Lower Boundary
-            LB[i-15] = Parameter_Entry[4]
+            LB[i-19] = Parameter_Entry[4]
             # Assign Parameter Upper Boundary
-            UB[i-15] = Parameter_Entry[5]
+            UB[i-19] = Parameter_Entry[5]
 
 Home = os.getcwd()
 
@@ -115,14 +118,8 @@ for iprm, prm_val in enumerate(NV):
 # Calculate the Normalized Nominal Values
 # NV_Norm = (NV - LB) / (UB - LB)
 
-PrmNrm_Mthd = 1
-if PrmNrm_Mthd == 1:
-    # Normalization method - range 0 to 1
-    PV_Norm = (PV - LB) / (UB - LB)
-
-elif PrmNrm_Mthd == 2:
-    # Normalization method - normalize by nominal value
-    PV_Norm = PV / NV
+# Calculate the normalized parameter values: Normalized to range 0 to 1
+PV_Norm = (PV - LB) / (UB - LB)
 
 # Alternative Perturbation For Selected parameters
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -133,71 +130,71 @@ elif PrmNrm_Mthd == 2:
 # for iprm, prm_val in enumerate(NV):
 #    if PC[iprm]:
 #        PV_Norm[iprm] = round(random.uniform(0,1),4)
-
+#
 # Make Run Directory
 os.system("mkdir " + RunDir)
-
-# Keep copy of OptCase.in in run directory
-os.system("cp OptCase.in " + RunDir)
-
-# Copy source code to compile BFM17 + POM1D
-os.system("cp -r Source/Source-BFMPOM " + RunDir + "/Config")
-
-# Compile BFM17 + POM1D, generate executable
-os.chdir(RunDir + "/Config")
-os.system("./Config_BFMPOM.sh")
-os.chdir(Home)
-
-# Create template folder for Optimization
-os.system("cp -r Source/Source-Run " + RunDir + "/Source")
-
-# Put executable in template folder
-os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
-
-# Copy input data
-os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
-
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-# Perform Reference Model Run
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-# Generate reference run directory (RefRun)
-os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
-# Copy script for Calculating normalization values
-os.system("cp Source/CalcNormVals.py " + RunDir + "/RefRun")
-
-# Input nominal set of parameter values
-os.chdir(RunDir + "/RefRun")
-# Writing Parameter Values to Namelists
-for i, prm in enumerate(PN):
-    Nml_File = find_key(Namelist_Dictionary, prm)
-    # Replace of current parameter in namelist with nominal value
-    os.system("sed -i '' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
-
-# Run Reference Evaluation
-os.system("./pom.exe")
-
-# Move Reference Run to template directory
-os.system("cp bfm17_pom1d.nc ../Source/bfm17_pom1d-ref.nc ")
-
-if Flag_Norm:
-    # Calculate the values for normalizing objective function
-    os.system("python3 CalcNormVals.py")
-    # Move Reference Run to template directory
-    os.system("cp NormVals.npy ../Source")
-
-# Return to home directory
-os.chdir(Home)
-
-# End of Reference Run
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-
-# Move objective function calculator to template directory
-os.system("cp Source/CalcObjective.py " + RunDir + "/Source/CalcObjective.py")
-
-# Complete Case Set-Up
-
-# Move interface to template directory
-os.system("cp Source/interface.py " + RunDir + "/Source/interface.py")
+#
+# # Keep copy of OptCase.in in run directory
+# os.system("cp OptCase.in " + RunDir)
+#
+# # Copy source code to compile BFM17 + POM1D
+# os.system("cp -r Source/Source-BFMPOM " + RunDir + "/Config")
+#
+# # Compile BFM17 + POM1D, generate executable
+# os.chdir(RunDir + "/Config")
+# os.system("./Config_BFMPOM.sh")
+# os.chdir(Home)
+#
+# # Create template folder for Optimization
+# os.system("cp -r Source/Source-Run " + RunDir + "/Source")
+#
+# # Put executable in template folder
+# os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
+#
+# # Copy input data
+# os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
+#
+# # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# # Perform Reference Model Run
+# # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# # Generate reference run directory (RefRun)
+# os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
+# # Copy script for Calculating normalization values
+# os.system("cp Source/CalcNormVals.py " + RunDir + "/RefRun")
+#
+# # Input nominal set of parameter values
+# os.chdir(RunDir + "/RefRun")
+# # Writing Parameter Values to Namelists
+# for i, prm in enumerate(PN):
+#     Nml_File = find_key(Namelist_Dictionary, prm)
+#     # Replace of current parameter in namelist with nominal value
+#     os.system("sed -i '' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+#
+# # Run Reference Evaluation
+# os.system("./pom.exe")
+#
+# # Move Reference Run to template directory
+# os.system("cp bfm17_pom1d.nc ../Source/bfm17_pom1d-ref.nc ")
+#
+# if Flag_Norm:
+#     # Calculate the values for normalizing objective function
+#     os.system("python3 CalcNormVals.py")
+#     # Move Reference Run to template directory
+#     os.system("cp NormVals.npy ../Source")
+#
+# # Return to home directory
+# os.chdir(Home)
+#
+# # End of Reference Run
+# # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+#
+# # Move objective function calculator to template directory
+# os.system("cp Source/CalcObjective.py " + RunDir + "/Source/CalcObjective.py")
+#
+# # Complete Case Set-Up
+#
+# # Move interface to template directory
+# os.system("cp Source/interface.py " + RunDir + "/Source/interface.py")
 
 # Move DAKOTA input file to Run directory
 os.system("cp Source/dakota.in " + RunDir + "/dakota.in")
@@ -208,12 +205,32 @@ os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dako
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 # DAKOTA Controls for input file Method Block
 
-# Method Block ID
-os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
-# os.system("sed -i '' 's/DI_ID/id_method = \\'QN\\'/' " + RunDir + "/dakota.in")
+if Flag_MS:
+    # Create multi-start method block
+    os.system("sed -i '' 's/BLCK_MltStrt/method/' " + RunDir + "/dakota.in")
+    # Add multi-start options
+    os.system("sed -i '' 's/MS_MP/method_pointer = '\\''QN'\\''/' " + RunDir + "/dakota.in")
+    #
+    os.system("sed -i '' 's/MS_NS/random_starts = 5/' " + RunDir + "/dakota.in")
+    #
+    os.system("sed -i '' 's/MS_SD/seed = 2828/' " + RunDir + "/dakota.in")
+
+    # Optimizer Method Block is given ID
+    os.system("sed -i '' 's/DI_ID/id_method = '\\''QN'\\''/' " + RunDir + "/dakota.in")
+
+else:
+    # Do not need multi-start method block
+    os.system("sed -i '' '/BLCK_MltStrt/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/multi_start/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/MS_MP/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/MS_NS/d' " + RunDir + "/dakota.in")
+    os.system("sed -i '' '/MS_SD/d' " + RunDir + "/dakota.in")
+
+    # Method Block ID is unnecessary
+    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
 
 # Optimization Method : Opt++ Quasi-Newton Method
-os.system("sed -i '' 's/ DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
+os.system("sed -i '' 's/DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
 # Convergence Criteria :
 os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1.e-4/' " + RunDir + "/dakota.in")
 # Max Number of Iterations
@@ -257,15 +274,15 @@ for ind, prm in enumerate(PN):
         prm_cnt +=1
 
 os.system("sed -i '' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDir + "/dakota.in")
-
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-# Done setting up dakota.in                                     #
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-
-# Output Information for interface.py
-np.save(RunDir + "/PControls",np.array([PN,PC]))
-np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
-
-# Run Dakota
-os.chdir(RunDir)
-os.system("time dakota -i dakota.in -o output.out -e error.err")
+#
+# # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# # Done setting up dakota.in                                     #
+# # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+#
+# # Output Information for interface.py
+# np.save(RunDir + "/PControls",np.array([PN,PC]))
+# np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
+#
+# # Run Dakota
+# os.chdir(RunDir)
+# os.system("time dakota -i dakota.in -o output.out -e error.err")
