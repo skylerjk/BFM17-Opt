@@ -16,6 +16,8 @@
 environment
   tabular_data
     tabular_data_file = 'PEOutput.dat'
+  results_output
+    results_output_file = 'PrmSet'
 
 BLCK_MltStrt
   multi_start
@@ -56,7 +58,7 @@ interface
     work_directory
       named 'OptEval'
       directory_tag
-    # directory_save
+    #  directory_save
     # Files need to run model
     copy_files = 'Source/*'
     # Defines parameter output format
