@@ -101,38 +101,6 @@ with open('OptCase.in') as readFile:
             UB[i-19] = Parameter_Entry[5]
 
 Home = os.getcwd()
-
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-# # Generate Perturbed Set of Normalized Parameter Values                    # #
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-for iprm, prm_val in enumerate(NV):
-    if PC[iprm]:
-        PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
-
-        # Correct val if perturbation moved normalized value out of 0 to 1 range
-        if PV[iprm] > UB[iprm]:
-            # PV[iprm] = NV[iprm] - 0.05 * NV[iprm]
-            PV[iprm] = UB[iprm]
-        elif PV[iprm] < LB[iprm]:
-            # PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
-            PV[iprm] = LB[iprm]
-
-    else:
-        PV[iprm] = NV[iprm]
-
-# Calculate the normalized parameter values: Normalized to range 0 to 1
-PV_Norm = (PV - LB) / (UB - LB)
-
-# Alternative Perturbation For Selected parameters
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-# Calculate normalized nominal parameter values
-# PV_Norm = (NV - LB) / (UB - LB)
-#
-# Randomly generaterating perturbed normalized parameter values
-# for iprm, prm_val in enumerate(NV):
-#    if PC[iprm]:
-#        PV_Norm[iprm] = round(random.uniform(0,1),4)
-
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Make Optimization Run Directory                                          # #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -159,42 +127,84 @@ os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 # Copy input data
 os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
 
+MaxPert = 0.001
+if Exprmt == 'osse':
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# # Generate Perturbed Set of Normalized Parameter Values                    # #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+    for iprm, prm_val in enumerate(NV):
+        if PC[iprm]:
+            # Constant Perturbation from nominal values
+            PV[iprm] = NV[iprm] + MaxPert * NV[iprm]
+
+            # Random Perturbation within +/- of max percentage
+            # PV[iprm] = NV[iprm] + round(random.uniform(-MaxPert,MaxPert),4) * NV[iprm]
+
+            # Correct val if perturbation moved normalized value out of bounds
+            if PV[iprm] > UB[iprm]:
+                # PV[iprm] = NV[iprm] - 0.05 * NV[iprm]
+                PV[iprm] = UB[iprm]
+            elif PV[iprm] < LB[iprm]:
+                # PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
+                PV[iprm] = LB[iprm]
+
+        else:
+            PV[iprm] = NV[iprm]
+
+        # Calculate the normalized parameter values: Normalized to range 0 to 1
+        PV_Norm = (PV - LB) / (UB - LB)
+
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # Perform Reference Model Run
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-# Generate reference run directory (RefRun)
-os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
-# Copy script for Calculating normalization values
-os.system("cp Source/CalcNormVals.py " + RunDir + "/RefRun")
+    # Number of Days to simulation
+    os.system("sed -i '' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
 
-# Input nominal set of parameter values
-os.chdir(RunDir + "/RefRun")
-# Writing Parameter Values to Namelists
-for i, prm in enumerate(PN):
-    Nml_File = find_key(Namelist_Dictionary, prm)
-    # Replace of current parameter in namelist with nominal value
-    os.system("sed -i '' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+    # Generate reference run directory (RefRun)
+    os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
+    # Copy script for Calculating normalization values
+    os.system("cp Source/CalcNormVals.py " + RunDir + "/RefRun")
 
-# Run Reference Evaluation
-os.system("./pom.exe")
+    # Input nominal set of parameter values
+    os.chdir(RunDir + "/RefRun")
+    # Writing Parameter Values to Namelists
+    for i, prm in enumerate(PN):
+        Nml_File = find_key(Namelist_Dictionary, prm)
+        # Replace of current parameter in namelist with nominal value
+        os.system("sed -i '' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
 
-# Move Reference Run to template directory
-os.system("cp bfm17_pom1d.nc ../Source/bfm17_pom1d-ref.nc ")
+    # Run Reference Evaluation
+    os.system("./pom.exe")
 
-if Flag_Norm:
-    # Calculate the values for normalizing objective function
-    os.system("python3 CalcNormVals.py")
     # Move Reference Run to template directory
-    os.system("cp NormVals.npy ../Source")
+    os.system("cp bfm17_pom1d.nc ../Source/bfm17_pom1d-ref.nc ")
 
-# Return to home directory
-os.chdir(Home)
+    if Flag_Norm:
+        # Calculate the values for normalizing objective function
+        os.system("python3 CalcNormVals.py")
+        # Move Reference Run to template directory
+        os.system("cp NormVals.npy ../Source")
+
+    # Return to home directory
+    os.chdir(Home)
+
+    # Copy OSSE objective function calculator to template directory
+    os.system("cp Source/CalcObjective_OSSE.py " + RunDir + "/Source/CalcObjective.py")
 
 # End of Reference Run
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+elif Exprmt == 'bats':
+    # Calculate normalized nominal parameter values
+    PV_Norm = (NV - LB) / (UB - LB)
 
-# Move objective function calculator to template directory
-os.system("cp Source/CalcObjective.py " + RunDir + "/Source/CalcObjective.py")
+    # Put observational data from the BATS site into opt dir
+    os.system("cp -r Source/ObsBATS " + RunDir )
+
+    # Copy objective function calculator to template directory
+    os.system("cp Source/CalcObjective_Obs.py " + RunDir + "/Source/CalcObjective.py")
+
+    # Number of Days to simulation
+    os.system("sed -i '' \"s/{SimDays}/1080/\" " + RunDir + "/Source/params_POMBFM.nml")
 
 # Complete Case Set-Up
 
@@ -217,7 +227,7 @@ if Flag_MS:
     # Identify Optimization Method Block
     os.system("sed -i '' 's/MS_MP/method_pointer = '\\''QN'\\''/' " + RunDir + "/dakota.in")
     # Number of Random Starts
-    os.system("sed -i '' 's/MS_NS/random_starts = 5/' " + RunDir + "/dakota.in")
+    os.system("sed -i '' 's/MS_NS/random_starts = 10/' " + RunDir + "/dakota.in")
     # Seed from Random Starts
     os.system("sed -i '' 's/MS_SD/seed = 2828/' " + RunDir + "/dakota.in")
 
