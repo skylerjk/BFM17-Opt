@@ -24,7 +24,7 @@ def find_key(Dict,val):
       if val in Search_List:
         return key
 
-# Control Flag for Normalization
+# Control Flag for Objective Function Normalization
 Flag_NO = eval(sys.argv[1])
 
 # Load the Optimization Control Information
@@ -46,11 +46,13 @@ with open('params.in') as readFile:
         if (i >= 1) and (i < 1+Num_Prms) :
             Parameter_Entry = line.split()
             # Parameter Value - Normalized
-            # Norm_Val[i-1] = Parameter_Entry[3]
-            if float(Parameter_Entry[3]) < 1.0e-16:
-                Norm_Val[i-1] = 0.0
-            else:
-                Norm_Val[i-1] = Parameter_Entry[3]
+            Norm_Val[i-1] = Parameter_Entry[3]
+
+            # if value read is too small assume it to be zero
+            # if float(Parameter_Entry[3]) < 1.0e-16:
+            #     Norm_Val[i-1] = 0.0
+            # else:
+            #     Norm_Val[i-1] = Parameter_Entry[3]
 
 # Calculate Parameter value for input
 cnt = 0
