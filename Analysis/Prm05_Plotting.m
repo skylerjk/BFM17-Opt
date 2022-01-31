@@ -9,7 +9,9 @@ TxtClr = 'k';
 lbox = 'off';
 
 % % Directory Information % %
-FileLoc = '../PE-Runs/OSSE-1D-14Prm-17StVr-OpQNwNorm-dt400-PrmSet14B-10percpert-Norm_RefSTD-GS1e-5-CC1e-6/PEOutput.dat';
+% FileLoc = '../PE-Runs/OSSE-1D-15Prm-17StVr-OpQNwNorm-dt400-PrmSet14-10percpert-Norm_RefSTD-GS1e-5-CC1e-10_Test2/PEOutput.dat';
+FileLoc = '../QN-Runs/OSSE-10Prm-17StVr-dt400-PrmSet-10perc-NrmRfSTD-GS1e-5-CC1e-10/PEOutput.dat';
+
 % FileLoc = '../PE-Runs/OSSE-1D-03Prm-17StVr-FRCGwNorm-dt400-PrmSet10A-025percpert-Norm_RefSTD/PEOutput.dat';
 % FileLoc = '../PE-Runs/OSSE-1D-03Prm-17StVr-OpCGwNorm-dt400-PrmSet10A-10percpert-Norm_RefSTD-GS1e-4-CC1e-10/PEOutput.dat';
 % FileLoc = '../PE-Runs/OSSE-1D-02Prm-17StVr-FRCGwNorm-dt400-p_qup-z_sd-10percpert-Norm_RefSTD-GS1e-4/PEOutput.dat';
@@ -20,7 +22,7 @@ FileLoc = '../PE-Runs/OSSE-1D-14Prm-17StVr-OpQNwNorm-dt400-PrmSet14B-10percpert-
 YL_Text = 'Total Normalized RMSD';
 
 % Opt_Text = 'FRCG Normalized by Standard Deviation of Reference Field';
-Opt_Text = 'Ref. STD Normalized Opt++ Quasi-Newton - FD Step Size 1E-5 & Conv. Criteria 1E-6';
+Opt_Text = 'Ref. STD Normalized Opt++ Quasi-Newton - FD Step Size 1E-5 & Conv. Criteria 1E-10';
 % Opt_Text = 'Ref. STD Normalized Opt++ Con Grad - Alt Prm Norm - FD Step Size 1E-3 & Conv. Criteria 1E-6'; % '; %     
 
 
@@ -105,11 +107,11 @@ Opt_Text = 'Ref. STD Normalized Opt++ Quasi-Newton - FD Step Size 1E-5 & Conv. C
 % % - Parameter reference values
 % prmval = [0.567,0.546,0.5,0.125,0.0];
 
-% %% Parameter Set 10 %%
-% % - Parameters Being Tested
-% prmtrs = {'p\_qup','p\_qplc','p\_qpcPPY','z\_sd','p\_sR6N1'};
-% % - Parameter reference values
-% prmval = [0.5,0.5,0.542,0.5,0.125];
+%% Parameter Set 10 %%
+% - Parameters Being Tested
+prmtrs = {'p\_qup','p\_qplc','p\_qpcPPY','z\_sd','p\_sR6N1'};
+% - Parameter reference values
+prmval = [0.5,0.5,0.542,0.5,0.125];
 
 % %% Parameter Set 10A %%
 % % - Parameters Being Tested
@@ -171,11 +173,11 @@ Opt_Text = 'Ref. STD Normalized Opt++ Quasi-Newton - FD Step Size 1E-5 & Conv. C
 % % % - Parameter reference values
 % prmval = [0.5,0.5,0.5,0.5,0.5,0.542,0.5,0.25,0.5,0.125,0.125,0.0,0.0,0.0];
 
-% % %% Parameter Set 14B %%
-% % - Parameters Being Tested
-prmtrs = {'p\_eps0','p\_qncPPY','p\_qup','p\_qplc','p\_qpcPPY','p\_alpha\_chl','p\_qlcPPY','z\_srs','z\_sd','p\_sR6N1','p\_sR6N4','p\_sR1O3','p\_sR1N1','p\_sR1N4'};
-% % - Parameter reference values
-prmval = [0.5,0.5,0.5,0.5,0.542,0.5,0.5,0.25,0.5,0.125,0.125,0.0,0.0,0.0];
+% % % %% Parameter Set 14B %%
+% % % - Parameters Being Tested
+% prmtrs = {'p\_eps0','p\_qncPPY','p\_qup','p\_qplc','p\_qpcPPY','p\_alpha\_chl','p\_qlcPPY','z\_srs','z\_sd','p\_sR6N1','p\_sR6N4','p\_sR1O3','p\_sR1N1','p\_sR1N4'};
+% % % - Parameter reference values
+% prmval = [0.5,0.5,0.5,0.5,0.542,0.5,0.5,0.25,0.5,0.125,0.125,0.0,0.0,0.0];
 
 % % %% Parameter Set 14C %%
 % % % - Parameters Being Tested
@@ -228,7 +230,7 @@ clrgrd=[1:num_evl]/num_evl;
 f1 = figure(1);  f1.Color = FigClr; f1.InvertHardcopy = 'off';
 plot([1:length(obj_val)],obj_val,'b-o')
 
-ttl = title('Prm Set 14B OSSE: Objective Function Evaluations',Opt_Text); ttl.Color = TxtClr;
+ttl = title({'Prm Set 14B OSSE: Objective Function Evaluations';Opt_Text}); ttl.Color = TxtClr;
 % ttl = title('Prm Set 11 OSSE: Objective Function Evaluations',Opt_Text); ttl.Color = TxtClr;
 
 % ttl = title('Prm Set 10A OSSE: Objective Function Evaluations',Opt_Text); ttl.Color = TxtClr;
@@ -255,14 +257,15 @@ for i=1:num_prm
     plot([1:num_evl],Diff_final,'-o','MarkerFaceColor','auto'), hold on
 
 end 
-ttl = title('Prm Set 14B OSSE: Difference in Normalized Parameter Values',Opt_Text);
+% ttl = title({'Prm Set 14 OSSE: Difference in Normalized Parameter Values';Opt_Text});
+ttl = title({'Prm Set 14 OSSE: Test2';Opt_Text});
 % ttl = title('Prm Set 11 OSSE: Difference in Normalized Parameter Values',Opt_Text); 
 
 % ttl = title('Prm Set 10A OSSE: Difference in Normalized Parameter Values',Opt_Text); 
 % ttl = title('2 Prm OSSE from Set 10: Difference in Normalized Parameter Value',Opt_Text); 
 ttl.Color = TxtClr;
 
-yl = ylabel({'Difference in Normalized Parameter Value';'p_{i} - p_{o}'}); 
+yl = ylabel({'Difference in Normalized Parameter Value';'$p_{i} - p_{o}$'}); 
 xl = xlabel('Optimization Index'); 
 
 yline(0)
