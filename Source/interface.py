@@ -67,7 +67,7 @@ for i, prm in enumerate(PN):
     Nml_File = find_key(Namelist_Dictionary, prm)
 
     # Replace value of current parameter
-    os.system("sed -i '' \"s/{" + prm + "}/" + str(RV[i]) +"/\" " + Nml_File)
+    os.system("sed -i'' \"s/{" + prm + "}/" + str(RV[i]) +"/\" " + Nml_File)
 
 # Run POM
 os.system("./pom.exe")

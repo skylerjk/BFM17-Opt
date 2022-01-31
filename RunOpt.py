@@ -158,7 +158,7 @@ if Exprmt == 'osse':
 # Perform Reference Model Run
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
     # Number of Days to simulation
-    os.system("sed -i '' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
+    os.system("sed -i'' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
 
     # Generate reference run directory (RefRun)
     os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
@@ -171,7 +171,7 @@ if Exprmt == 'osse':
     for i, prm in enumerate(PN):
         Nml_File = find_key(Namelist_Dictionary, prm)
         # Replace of current parameter in namelist with nominal value
-        os.system("sed -i '' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+        os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
 
     # Run Reference Evaluation
     os.system("./pom.exe")
@@ -204,7 +204,7 @@ elif Exprmt == 'bats':
     os.system("cp Source/CalcObjective_Obs.py " + RunDir + "/Source/CalcObjective.py")
 
     # Number of Days to simulation
-    os.system("sed -i '' \"s/{SimDays}/1080/\" " + RunDir + "/Source/params_POMBFM.nml")
+    os.system("sed -i'' \"s/{SimDays}/1080/\" " + RunDir + "/Source/params_POMBFM.nml")
 
 # Complete Case Set-Up
 
@@ -213,7 +213,7 @@ os.system("cp Source/interface.py " + RunDir + "/Source/interface.py")
 
 # Move DAKOTA input file to Run directory
 os.system("cp Source/dakota.in " + RunDir + "/dakota.in")
-os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dakota.in")
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Set Up DAKOTA input file                                                 # #
@@ -223,70 +223,70 @@ os.system("sed -i '' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dako
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 if Flag_MS:
     # Create multi-start method block
-    os.system("sed -i '' 's/BLCK_MltStrt/method/' " + RunDir + "/dakota.in")
+    os.system("sed -i'' 's/BLCK_MltStrt/method/' " + RunDir + "/dakota.in")
     # Identify Optimization Method Block
-    os.system("sed -i '' 's/MS_MP/method_pointer = '\\''QN'\\''/' " + RunDir + "/dakota.in")
+    os.system("sed -i'' 's/MS_MP/method_pointer = '\\''QN'\\''/' " + RunDir + "/dakota.in")
     # Number of Random Starts
-    os.system("sed -i '' 's/MS_NS/random_starts = 10/' " + RunDir + "/dakota.in")
+    os.system("sed -i'' 's/MS_NS/random_starts = 10/' " + RunDir + "/dakota.in")
     # Seed from Random Starts
-    os.system("sed -i '' 's/MS_SD/seed = 2828/' " + RunDir + "/dakota.in")
+    os.system("sed -i'' 's/MS_SD/seed = 2828/' " + RunDir + "/dakota.in")
 
     # Optimizer Method Block is given ID
-    os.system("sed -i '' 's/DI_ID/id_method = '\\''QN'\\''/' " + RunDir + "/dakota.in")
+    os.system("sed -i'' 's/DI_ID/id_method = '\\''QN'\\''/' " + RunDir + "/dakota.in")
 
 else:
     # Do not need any of the multi-start method block
-    os.system("sed -i '' '/BLCK_MltStrt/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/multi_start/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/MS_MP/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/MS_NS/d' " + RunDir + "/dakota.in")
-    os.system("sed -i '' '/MS_SD/d' " + RunDir + "/dakota.in")
+    os.system("sed -i'' '/BLCK_MltStrt/d' " + RunDir + "/dakota.in")
+    os.system("sed -i'' '/multi_start/d' " + RunDir + "/dakota.in")
+    os.system("sed -i'' '/MS_MP/d' " + RunDir + "/dakota.in")
+    os.system("sed -i'' '/MS_NS/d' " + RunDir + "/dakota.in")
+    os.system("sed -i'' '/MS_SD/d' " + RunDir + "/dakota.in")
 
     # Method Block ID is unnecessary
-    os.system("sed -i '' '/DI_ID/d' " + RunDir + "/dakota.in")
+    os.system("sed -i'' '/DI_ID/d' " + RunDir + "/dakota.in")
 
 # DAKOTA Controls for input file Optimizer Method Block
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 # Optimization Method : Opt++ Quasi-Newton Method
-os.system("sed -i '' 's/DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
 # Convergence Criteria :
-os.system("sed -i '' 's/DI_CT/convergence_tolerance = 1.e-4/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_CT/convergence_tolerance = 1.e-4/' " + RunDir + "/dakota.in")
 # Max Number of Iterations
-os.system("sed -i '' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
 # Max Number of Model Evaluations
-os.system("sed -i '' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_FE/max_function_evaluations = 100000/' " + RunDir + "/dakota.in")
 # Search Method
-os.system("sed -i '' 's/DI_LS/search_method value_based_line_search/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_LS/search_method value_based_line_search/' " + RunDir + "/dakota.in")
 # Merit Function : argaez_tapia, el_bakry, van_shanno
-os.system("sed -i '' 's/DI_MF/merit_function argaez_tapia/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_MF/merit_function argaez_tapia/' " + RunDir + "/dakota.in")
 # Max Step Size
-os.system("sed -i '' 's/DI_MxStp/max_step = 1000.0/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_MxStp/max_step = 1000.0/' " + RunDir + "/dakota.in")
 # Gradient Tolerance
-os.system("sed -i '' 's/DI_GrdTol/gradient_tolerance = 1.e-4/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_GrdTol/gradient_tolerance = 1.e-4/' " + RunDir + "/dakota.in")
 
 # DAKOTA Controls for input file Response Block
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 # Finite Differencing Routine Source
-os.system("sed -i '' 's/DI_MthdSrc/method_source dakota/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_MthdSrc/method_source dakota/' " + RunDir + "/dakota.in")
 # Gradient Approximation Approach
-os.system("sed -i '' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_IT/interval_type forward/' " + RunDir + "/dakota.in")
 # Finite Differencing Step Size
-os.system("sed -i '' 's/DI_GrdStp/fd_gradient_step_size = 1.e-5/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/DI_GrdStp/fd_gradient_step_size = 1.e-5/' " + RunDir + "/dakota.in")
 
 # DAKOTA Controls for input file Variable Block
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 prm_cnt = 0
 for ind, prm in enumerate(PN):
     if PC[ind]:
-        os.system("sed -i '' \"/descriptors =/s/$/ \\'" + prm + "\\'/\" " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/initial_point =/s/$/ " + f"{PV_Norm[ind]:g}" + "/' " + RunDir + "/dakota.in")
+        os.system("sed -i'' \"/descriptors =/s/$/ \\'" + prm + "\\'/\" " + RunDir + "/dakota.in")
+        os.system("sed -i'' '/initial_point =/s/$/ " + f"{PV_Norm[ind]:g}" + "/' " + RunDir + "/dakota.in")
 
-        os.system("sed -i '' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
-        os.system("sed -i '' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
+        os.system("sed -i'' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
+        os.system("sed -i'' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
 
         prm_cnt +=1
 
-os.system("sed -i '' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDir + "/dakota.in")
+os.system("sed -i'' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDir + "/dakota.in")
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 # Done setting up dakota.in                                     #
@@ -298,4 +298,4 @@ np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
 
 # Run Dakota
 os.chdir(RunDir)
-os.system("time dakota -i dakota.in -o output.out -e error.err")
+os.system("dakota -i dakota.in -o output.out -e error.err")

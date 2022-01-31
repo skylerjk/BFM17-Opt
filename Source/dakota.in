@@ -47,6 +47,8 @@ variables
     upper_bounds =
 
 interface
+  asynchronous
+    evaluation_concurrency = 29
   fork
     # Interface script between DAKOTA and model
     analysis_driver = 'python3 interface.py NORM_CONTROL'

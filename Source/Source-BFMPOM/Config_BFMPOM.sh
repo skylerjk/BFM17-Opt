@@ -3,8 +3,10 @@
 # change restart files names
 
 export BFMDIR="$(pwd)"
-export NETCDF="/usr/local/netcdf"
 export BFMDIR_RUN="$BFMDIR/bfm_run"
+
+# Include to run locally
+# export NETCDF="/usr/local/netcdf"
 
 cd $BFMDIR/build
 
