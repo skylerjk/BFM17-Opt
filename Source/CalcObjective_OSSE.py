@@ -14,7 +14,7 @@ Sim_Days = 30
 Num_SVar = len(State_Variables)
 
 # Control Flag for Normalization
-Flag_NO = eval(sys.argv[1])
+Flag_Norm = eval(sys.argv[1])
 
 # Location of BFM17-POM1D results
 NC_Ref_File_Location = 'bfm17_pom1d-ref.nc'
@@ -45,7 +45,7 @@ N = float(Num_Days*depth)
 # Calculate the RMSD in the field of each state variable
 RMSD = np.sqrt(np.sum(np.sum((BGC_Tst_Data - BGC_Ref_Data)**2, axis = 2), axis = 1)/N)
 
-if Flag_NO:
+if Flag_Norm:
     # Load normalization values from nominal case
     NormVals = np.load('NormVals.npy')
 
