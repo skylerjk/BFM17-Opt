@@ -190,21 +190,47 @@ if Exprmt == 'osse':
 
     # Copy OSSE objective function calculator to template directory
     os.system("cp Source/CalcObjective_OSSE.py " + RunDir + "/Source/CalcObjective.py")
-
+#
 # End of Reference Run
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-elif Exprmt == 'bats':
+elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
     # Calculate normalized nominal parameter values
     PV_Norm = (NV - LB) / (UB - LB)
 
-    # Put observational data from the BATS site into opt dir
-    os.system("cp -r Source/ObsBATS " + RunDir )
-
-    # Copy objective function calculator to template directory
-    os.system("cp Source/CalcObjective_Obs.py " + RunDir + "/Source/CalcObjective.py")
-
     # Number of Days to simulation
     os.system("sed -i'' \"s/{SimDays}/1080/\" " + RunDir + "/Source/params_POMBFM.nml")
+
+    if Exprmt == 'bats' or Exprmt == 'comb':
+        # Put input data from the BATS site into opt dir
+        os.system("cp -r Source/inputs_bats " + RunDir )
+        # Put observational data from the BATS site into opt dir
+        os.system("cp -r Source/ObsBATS " + RunDir )
+
+        if Exprmt == 'bats':
+            # Insert input directory
+            os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/BFM_General.nml")
+            os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/pom_input.nml")
+
+    if Exprmt == 'hots' or Exprmt == 'comb':
+        # Put input data from the BATS site into opt dir
+        os.system("cp -r Source/inputs_hots " + RunDir )
+        # Put observational data from the HOTS site into opt dir
+        os.system("cp -r Source/ObsHOTS " + RunDir )
+
+        if Exprmt == 'hots':
+            # Insert input directory
+            os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" " + RunDir + "/Source/BFM_General.nml")
+            os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" " + RunDir + "/Source/pom_input.nml")
+
+    # if Exprmt == 'comb':
+    #
+    #     os.system("mv " + RunDir + "/Source/BFM_General.nml " + RunDir)
+    #
+    #     os.system("mv " + RunDir + "/Source/pom_input.nml " + RunDir)
+
+
+    # Copy objective function calculator to template directory
+    os.system("cp Source/CalcObjective_" + Exprmt + ".py " + RunDir + "/Source/CalcObjective.py")
 
 # Complete Case Set-Up
 
@@ -214,6 +240,7 @@ os.system("cp Source/interface.py " + RunDir + "/Source/interface.py")
 # Move DAKOTA input file to Run directory
 os.system("cp Source/dakota.in " + RunDir + "/dakota.in")
 os.system("sed -i'' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dakota.in")
+os.system("sed -i'' 's/EXPRMT/"+ Exprmt + "/' " + RunDir + "/dakota.in")
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Set Up DAKOTA input file                                                 # #

@@ -26,6 +26,8 @@ def find_key(Dict,val):
 
 # Control Flag for Objective Function Normalization
 Flag_NO = eval(sys.argv[1])
+# Control Flag for Site Control ()
+Flag_SC = sys.argv[2]
 
 # Load the Optimization Control Information
 PN, PC = np.load('../PControls.npy')
@@ -71,6 +73,18 @@ for i, prm in enumerate(PN):
 
 # Run POM
 os.system("./pom.exe")
+
+if Flag_SC == 'comb':
+    # Move BATS model evaluation data to new file reference
+    os.system("mv bfm17_pom1d.nc bfm17_pom1d_bats.nc")
+
+    os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" " + RunDir + "/Source/BFM_General.nml")
+    os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" " + RunDir + "/Source/pom_input.nml")
+
+    os.system("./pom.exe")
+
+    # Move HOTS model evaluation data to new file reference
+    os.system("cp bfm17_pom1d.nc bfm17_pom1d_bats.nc")
 
 # Calculate Objective function
 os.system("python3 CalcObjective.py " + str(Flag_NO))
