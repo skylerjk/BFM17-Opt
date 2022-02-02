@@ -102,14 +102,14 @@
 ! Pelagic initialisation of standard variables
 !-------------------------------------------------------------------------!
 &bfm_IC_nml
-   phyto_input      =  '../Inputs/BFM17_BERM_INIT/init_prof_Pc_150m_bermuda_killworth.da',
-   zoop_input       =  '../Inputs/BFM17_BERM_INIT/init_prof_Zc_150m_bermuda_killworth.da',
-   poc_input        =  '../Inputs/BFM17_BERM_INIT/init_prof_POC_150m_bermuda_killworth.da',
-   doc_input        =  '../Inputs/BFM17_BERM_INIT/init_prof_DOC_150m_bermuda_killworth.da',
-   phos_input       =  '../Inputs/BFM17_BERM_INIT/init_prof_P_150m_bermuda_killworth.da',
-   nit_input        =  '../Inputs/BFM17_BERM_INIT/init_prof_N_150m_bermuda_killworth.da',
-   am_input         =  '../Inputs/BFM17_BERM_INIT/init_prof_Am_150m_bermuda_killworth.da',
-   oxy_input        =  '../Inputs/BFM17_BERM_INIT/init_prof_Oxy_150m_bermuda_killworth.da',
+   phyto_input      =  '{InDir}/bfm17_init/init_vprof_Pc.da',
+   zoop_input       =  '{InDir}/bfm17_init/init_vprof_Zc.da',
+   poc_input        =  '{InDir}/bfm17_init/init_vprof_POC.da',
+   doc_input        =  '{InDir}/bfm17_init/init_vprof_DOC.da',
+   phos_input       =  '{InDir}/bfm17_init/init_vprof_Pho.da',
+   nit_input        =  '{InDir}/bfm17_init/init_vprof_Nit.da',
+   am_input         =  '{InDir}/bfm17_init/init_vprof_Am.da',
+   oxy_input        =  '{InDir}/bfm17_init/init_vprof_Oxy.da',
 /
 
 ! Benthic initialisation of standard variables
