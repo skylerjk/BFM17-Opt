@@ -8,7 +8,7 @@ Flag_Norm = eval(sys.argv[1])
 
 depth = 150
 Num_Days = 360
-Num_Fld = 6
+Num_Fld = 8
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Loading observational data from .npy files                               # #
@@ -31,13 +31,21 @@ Temp = None
 Temp = np.load('../ObsBATS/Phos_1yr_climatology.npy')
 Obs_Ref_Data[3,:,:] = Temp[0:150,:].transpose()
 Temp = None
-# Total Organic Particulate Matter Data
-Temp = np.load('../ObsBATS/PON_1yr_climatology.npy')
+# Total Organic Particulate Matter Data - Carbon
+Temp = np.load('../ObsBATS/POC_1yr_climatology.npy')
 Obs_Ref_Data[4,:,:] = Temp[0:150,:].transpose()
+Temp = None
+# Total Organic Particulate Matter Data - Nitrogen
+Temp = np.load('../ObsBATS/PON_1yr_climatology.npy')
+Obs_Ref_Data[5,:,:] = Temp[0:150,:].transpose()
+Temp = None
+# Total Organic Particulate Matter Data - Phosphorous
+Temp = np.load('../ObsBATS/PON_1yr_climatology.npy')
+Obs_Ref_Data[6,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Net Primary Production Data
 Temp = np.load('../ObsBATS/NPP_1yr_climatology.npy')
-Obs_Ref_Data[5,:,:] = Temp[0:150,:].transpose()
+Obs_Ref_Data[7,:,:] = Temp[0:150,:].transpose()
 Temp = None
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -58,10 +66,14 @@ Temp[1,:,:] = NC_Data['O2o'][:]
 Temp[2,:,:] = NC_Data['N3n'][:]
 # Phosphate Data
 Temp[3,:,:] = NC_Data['N1p'][:]
-# Total Organic Particulate Matter Data
-Temp[4,:,:] = NC_Data['R6n'][:] + NC_Data['P2n'][:] + NC_Data['Z5n'][:]
+# Total Organic Particulate Matter Data - Carbon
+Temp[4,:,:] = NC_Data['R6c'][:] + NC_Data['P2c'][:] + NC_Data['Z5c'][:]
+# Total Organic Particulate Matter Data - Nitrogen
+Temp[5,:,:] = NC_Data['R6n'][:] + NC_Data['P2n'][:] + NC_Data['Z5n'][:]
+# Total Organic Particulate Matter Data - Nitrogen
+Temp[6,:,:] = NC_Data['R6p'][:] + NC_Data['P2p'][:] + NC_Data['Z5p'][:]
 # Net Primary Production Data
-Temp[5,:,:] = NC_Data['ruPTc'][:] - NC_Data['resPP'][:] - NC_Data['resZT'][:]
+Temp[7,:,:] = NC_Data['ruPTc'][:] - NC_Data['resPP'][:] - NC_Data['resZT'][:]
 
 #
 BGC_Raw_Data = np.zeros([Num_Fld,360,depth])
@@ -72,7 +84,7 @@ for i in range(Num_Fld):
     BGC_Raw_Data[i,:,:] = Temp[i,-360:,:]
 
     # NPP units have to be converted to compare to obs data
-    if i == 5:
+    if i == 7:
         BGC_Raw_Data[i,:,:] = BGC_Raw_Data[i,:,:]/12.0
 
 # Calculate Monthly Averages for comparison to obs data
