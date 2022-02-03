@@ -124,8 +124,8 @@ os.system("cp -r Source/Source-Run " + RunDir + "/Source")
 # Put executable in template folder
 os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 
-# Copy input data
-os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
+# # Copy input data
+# os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
 
 MaxPert = 0.001
 if Exprmt == 'osse':
@@ -206,10 +206,9 @@ elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
         # Put observational data from the BATS site into opt dir
         os.system("cp -r Source/ObsBATS " + RunDir )
 
-        if Exprmt == 'bats':
-            # Insert input directory
-            os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/BFM_General.nml")
-            os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/pom_input.nml")
+        # Insert input directory
+        os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/BFM_General.nml")
+        os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/pom_input.nml")
 
     if Exprmt == 'hots' or Exprmt == 'comb':
         # Put input data from the BATS site into opt dir

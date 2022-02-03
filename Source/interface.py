@@ -78,8 +78,8 @@ if Flag_SC == 'comb':
     # Move BATS model evaluation data to new file reference
     os.system("mv bfm17_pom1d.nc bfm17_pom1d_bats.nc")
 
-    os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" " + RunDir + "/Source/BFM_General.nml")
-    os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" " + RunDir + "/Source/pom_input.nml")
+    os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" BFM_General.nml")
+    os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" pom_input.nml")
 
     os.system("./pom.exe")
 
