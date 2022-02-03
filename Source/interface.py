@@ -84,7 +84,7 @@ if Flag_SC == 'comb':
     os.system("./pom.exe")
 
     # Move HOTS model evaluation data to new file reference
-    os.system("cp bfm17_pom1d.nc bfm17_pom1d_bats.nc")
+    os.system("mv bfm17_pom1d.nc bfm17_pom1d_hots.nc")
 
 # Calculate Objective function
 os.system("python3 CalcObjective.py " + str(Flag_NO))
