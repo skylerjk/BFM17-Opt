@@ -50,6 +50,9 @@ Temp = np.load('../ObsBATS/NPP_1yr_climatology.npy')
 BATS_Obs_Data[7,:,:] = Temp[0:150,:].transpose()
 Temp = None
 
+# Field Wieghting
+Pi_BATS = np.array([ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
 # # Model Data # #
 
 # Output DataFile
@@ -93,7 +96,7 @@ Temp = None
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 Num_Fld_HOTS = 10
 
-# # Observational Data
+# # Observational Data # #
 HOTS_Obs_Data = np.zeros([Num_Fld_HOTS,12,depth])
 
 # Chlorophyll Data
@@ -136,6 +139,9 @@ Temp = None
 Temp = np.load('../ObsHOTS/POP_1yr_HOTS.npy')
 HOTS_Obs_Data[9,:,:] = Temp[0:150,:].transpose()
 Temp = None
+
+# Field Wieghting
+Pi_HOTS = np.array([ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
 # # Model Data # #
 
@@ -212,11 +218,11 @@ if Flag_Norm:
         STD_HOTS[i] = np.std(HOTS_Obs_Data[i,:,:])
 
     # Sum normalized RMSD values to calculate objective function
-    obj = np.sum(RMSD_BATS/STD_BATS) + np.sum(RMSD_HOTS/STD_HOTS)
+    obj = np.sum(Pi_BATS*(RMSD_BATS/STD_BATS)) + np.sum(Pi_HOTS(RMSD_HOTS/STD_HOTS))
 
 else:
     # Sum RMSD values to calculate objective function
-    obj = np.sum(RMSD_BATS) + np.sum(RMSD_HOTS)
+    obj = np.sum(Pi_BATS*RMSD_BATS) + np.sum(Pi_HOTS*RMSD_HOTS)
 
 # How to output data
 ofile = open('result.out','w')

@@ -56,6 +56,9 @@ Temp = np.load('../ObsHOTS/POP_1yr_HOTS.npy')
 Obs_Ref_Data[9,:,:] = Temp[0:150,:].transpose()
 Temp = None
 
+# Field Wieghting
+Pi = np.array([ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Loading model data from output file *.nc                                 # #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -113,11 +116,11 @@ if Flag_Norm:
         STD[i] = np.std(Obs_Ref_Data[i,:,:])
 
     # Sum normalized RMSD values to calculate objective function
-    obj = np.sum(RMSD/STD)
+    obj = np.sum(Pi*(RMSD/STD))
 
 else:
     # Sum RMSD values to calculate objective function
-    obj = np.sum(RMSD)
+    obj = np.sum(Pi*RMSD)
 
 # How to output data
 ofile = open('result.out','w')
