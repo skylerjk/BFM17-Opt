@@ -124,8 +124,8 @@ os.system("cp -r Source/Source-Run " + RunDir + "/Source")
 # Put executable in template folder
 os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 
-# # Copy input data
-# os.system("cp -r Source/Source-BFMPOM/Inputs " + RunDir)
+# Copy objective function calculator to template directory
+os.system("cp Source/ObjFncts/CalcObjective_" + Exprmt + ".py " + RunDir + "/Source/CalcObjective.py")
 
 MaxPert = 0.001
 if Exprmt == 'osse':
@@ -160,6 +160,13 @@ if Exprmt == 'osse':
     # Number of Days to simulation
     os.system("sed -i'' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
 
+    # Put input data from the BATS site into opt dir
+    os.system("cp -r Source/inputs_bats " + RunDir )
+
+    # Identify input files
+    os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/BFM_General.nml")
+    os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/pom_input.nml")
+
     # Generate reference run directory (RefRun)
     os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
     # Copy script for Calculating normalization values
@@ -188,14 +195,15 @@ if Exprmt == 'osse':
     # Return to home directory
     os.chdir(Home)
 
-    # Copy OSSE objective function calculator to template directory
-    os.system("cp Source/CalcObjective_OSSE.py " + RunDir + "/Source/CalcObjective.py")
 #
 # End of Reference Run
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
     # Calculate normalized nominal parameter values
     PV_Norm = (NV - LB) / (UB - LB)
+
+    # Copies code for running model with optimized parameters
+    os.system("cp Source/RunOptSol.py " + RunDir)
 
     # Number of Days to simulation
     os.system("sed -i'' \"s/{SimDays}/1080/\" " + RunDir + "/Source/params_POMBFM.nml")
@@ -220,16 +228,6 @@ elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
             # Insert input directory
             os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" " + RunDir + "/Source/BFM_General.nml")
             os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" " + RunDir + "/Source/pom_input.nml")
-
-    # if Exprmt == 'comb':
-    #
-    #     os.system("mv " + RunDir + "/Source/BFM_General.nml " + RunDir)
-    #
-    #     os.system("mv " + RunDir + "/Source/pom_input.nml " + RunDir)
-
-
-    # Copy objective function calculator to template directory
-    os.system("cp Source/CalcObjective_" + Exprmt + ".py " + RunDir + "/Source/CalcObjective.py")
 
 # Complete Case Set-Up
 
@@ -310,7 +308,7 @@ for ind, prm in enumerate(PN):
         os.system("sed -i'' '/lower_bounds =/s/$/ 0.0/' " + RunDir + "/dakota.in")
         os.system("sed -i'' '/upper_bounds =/s/$/ 1.0/' " + RunDir + "/dakota.in")
 
-        prm_cnt +=1
+        prm_cnt += 1
 
 os.system("sed -i'' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDir + "/dakota.in")
 
