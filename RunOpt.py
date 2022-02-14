@@ -64,6 +64,8 @@ LB = np.zeros(51)
 # Parameter Upper Bound
 UB = np.zeros(51)
 
+# Parameter Inupute Line Number
+LnPI = 20
 with open('OptCase.in') as readFile:
     for i, line in enumerate(readFile):
         if i == 7:
@@ -80,11 +82,16 @@ with open('OptCase.in') as readFile:
             Option_Cntrl = line.split()
             Flag_Norm = eval(Option_Cntrl[2])
 
-        if i == 13:
+        if i == 12:
+            # Control whether objective funct. is normalized in OptCase.in
+            Option_Cntrl = line.split()
+            NormVal = Option_Cntrl[2]
+
+        if i == 14:
             Option_Cntrl = line.split()
             Flag_MS = eval(Option_Cntrl[2])
 
-        if i >= 19:
+        if i >= LnPI:
             Parameter_Entry = line.split()
             # print(line)
             # print(Parameter_Entry)
@@ -94,13 +101,14 @@ with open('OptCase.in') as readFile:
             # Assign Parameter Control
             PC.append(eval(Parameter_Entry[2]))
             # Assign Parameter Nominal Value
-            NV[i-19] = Parameter_Entry[3]
+            NV[i-LnPI] = Parameter_Entry[3]
             # Assign Parameter Lower Boundary
-            LB[i-19] = Parameter_Entry[4]
+            LB[i-LnPI] = Parameter_Entry[4]
             # Assign Parameter Upper Boundary
-            UB[i-19] = Parameter_Entry[5]
+            UB[i-LnPI] = Parameter_Entry[5]
 
 Home = os.getcwd()
+
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Make Optimization Run Directory                                          # #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -124,14 +132,15 @@ os.system("cp -r Source/Source-Run " + RunDir + "/Source")
 # Put executable in template folder
 os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
 
-# Copy objective function calculator to template directory
-os.system("cp Source/ObjFncts/CalcObjective_" + Exprmt + ".py " + RunDir + "/Source/CalcObjective.py")
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# # Generate Optimization Case - Complete Run Directory                      # #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
-MaxPert = 0.001
+# IF Running an observing system simulation experiment #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+MaxPert = 0.1
 if Exprmt == 'osse':
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-# # Generate Perturbed Set of Normalized Parameter Values                    # #
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Calculate Perturbed parameter values
     for iprm, prm_val in enumerate(NV):
         if PC[iprm]:
             # Constant Perturbation from nominal values
@@ -154,10 +163,7 @@ if Exprmt == 'osse':
         # Calculate the normalized parameter values: Normalized to range 0 to 1
         PV_Norm = (PV - LB) / (UB - LB)
 
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-# Perform Reference Model Run
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-    # Number of Days to simulation
+    # Number of Days to simulation in OSSE
     os.system("sed -i'' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
 
     # Put input data from the BATS site into opt dir
@@ -167,37 +173,8 @@ if Exprmt == 'osse':
     os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/BFM_General.nml")
     os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" " + RunDir + "/Source/pom_input.nml")
 
-    # Generate reference run directory (RefRun)
-    os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
-    # Copy script for Calculating normalization values
-    os.system("cp Source/CalcNormVals.py " + RunDir + "/RefRun")
-
-    # Input nominal set of parameter values
-    os.chdir(RunDir + "/RefRun")
-    # Writing Parameter Values to Namelists
-    for i, prm in enumerate(PN):
-        Nml_File = find_key(Namelist_Dictionary, prm)
-        # Replace of current parameter in namelist with nominal value
-        os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
-
-    # Run Reference Evaluation
-    os.system("./pom.exe")
-
-    # Move Reference Run to template directory
-    os.system("cp bfm17_pom1d.nc ../Source/bfm17_pom1d-ref.nc ")
-
-    if Flag_Norm:
-        # Calculate the values for normalizing objective function
-        os.system("python3 CalcNormVals.py")
-        # Move Reference Run to template directory
-        os.system("cp NormVals.npy ../Source")
-
-    # Return to home directory
-    os.chdir(Home)
-
-#
-# End of Reference Run
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# IF Running an parameter estimation study with obs data #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
     # Calculate normalized nominal parameter values
     PV_Norm = (NV - LB) / (UB - LB)
@@ -229,19 +206,17 @@ elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
             os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" " + RunDir + "/Source/BFM_General.nml")
             os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" " + RunDir + "/Source/pom_input.nml")
 
-# Complete Case Set-Up
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# # Experiment Independent Set-up                                            # #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
-# Move interface to template directory
-os.system("cp Source/interface.py " + RunDir + "/Source/interface.py")
-
-# Move DAKOTA input file to Run directory
+# Set Up DAKOTA input file #
+# =-=-=-=-=-=-=-=-=-=-=-=- #
 os.system("cp Source/dakota.in " + RunDir + "/dakota.in")
+
+# Interface inputs - case and normalization selection
 os.system("sed -i'' 's/NORM_CONTROL/"+ str(Flag_Norm) + "/' " + RunDir + "/dakota.in")
 os.system("sed -i'' 's/EXPRMT/"+ Exprmt + "/' " + RunDir + "/dakota.in")
-
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-# # Set Up DAKOTA input file                                                 # #
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
 # DAKOTA Controls for input file Multi-Start Method Block
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -319,6 +294,59 @@ os.system("sed -i'' '/continuous_design =/s/$/ " + str(prm_cnt) + "/' " + RunDir
 # Output Information for interface.py
 np.save(RunDir + "/PControls",np.array([PN,PC]))
 np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Perform Reference Model Run
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+# Generate reference run directory (RefRun)
+os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
+
+# Input nominal set of parameter values
+os.chdir(RunDir + "/RefRun")
+# Writing Parameter Values to Namelists
+for i, prm in enumerate(PN):
+    Nml_File = find_key(Namelist_Dictionary, prm)
+    # Replace of current parameter in namelist with nominal value
+    os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+
+# Run Reference Evaluation
+os.system("./pom.exe")
+
+if Exprmt == 'osse':
+    # Move Reference Run to template directory
+    os.system("cp bfm17_pom1d.nc ../Source/bfm17_pom1d-ref.nc ")
+
+elif Exprmt == 'comb':
+    # Move BATS model evaluation data to new file reference
+    os.system("mv bfm17_pom1d.nc bfm17_pom1d_bats.nc")
+
+    os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" BFM_General.nml")
+    os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" pom_input.nml")
+
+    os.system("./pom.exe")
+
+    # Move HOTS model evaluation data to new file reference
+    os.system("mv bfm17_pom1d.nc bfm17_pom1d_hots.nc")
+
+if Flag_Norm:
+    os.system("cp " + Home + "/Source/NrmFuncts/CalcNormVals_" + Exprmt + ".py CalcNormVals.py")
+
+    # Calculate the values for normalizing objective function
+    os.system("python3 CalcNormVals.py " + NormVal)
+    # Move Reference Run to template directory
+    os.system("cp NormVals.npy ../")
+
+# Return to home directory
+os.chdir(Home)
+
+# Move interface to template directory
+os.system("cp Source/interface.py " + RunDir + "/Source/interface.py")
+
+# Copy objective function calculator to template directory
+os.system("cp Source/ObjFncts/CalcObjective_" + Exprmt + ".py " + RunDir + "/Source/CalcObjective.py")
+
+# End of Reference Run
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 
 # Run Dakota
 os.chdir(RunDir)
