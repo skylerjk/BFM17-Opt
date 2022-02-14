@@ -109,14 +109,10 @@ N = 12.0*150.0
 RMSD = np.sqrt(np.sum(np.sum((BGC_Avg_Data - Obs_Ref_Data)**2, axis = 2), axis = 1)/N)
 
 if Flag_Norm:
-    STD = np.zeros(Num_Fld)
-
-    # Calculating the standard deviation each obs field
-    for i in range(Num_Fld):
-        STD[i] = np.std(Obs_Ref_Data[i,:,:])
+    NVals = np.load('../NormVals.npy')
 
     # Sum normalized RMSD values to calculate objective function
-    obj = np.sum(Pi*(RMSD/STD))
+    obj = np.sum(Pi*(RMSD/NVals))
 
 else:
     # Sum RMSD values to calculate objective function

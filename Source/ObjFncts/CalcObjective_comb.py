@@ -203,26 +203,18 @@ N = 12.0*150.0
 RMSD_BATS = np.sqrt(np.sum(np.sum((BATS_Avg_Data - BATS_Obs_Data)**2, axis = 2), axis = 1)/N)
 RMSD_HOTS = np.sqrt(np.sum(np.sum((HOTS_Avg_Data - HOTS_Obs_Data)**2, axis = 2), axis = 1)/N)
 
+RMSD = np.concatentate((RMSD_BATS,RMSD_HOTS))
+Pi = np.concatenate((Pi_BATS,Pi_HOTS))
+
 if Flag_Norm:
-    # Declare array for STD in BATS Obs Data
-    STD_BATS = np.zeros(Num_Fld_BATS)
-    # Declare array for STD in HOTS Obs Data
-    STD_HOTS = np.zeros(Num_Fld_HOTS)
-
-    # Calculating the standard deviation BATS obs fields
-    for i in range(Num_Fld_BATS):
-        STD_BATS[i] = np.std(BATS_Obs_Data[i,:,:])
-
-    # Calculating the standard deviation HOTS obs fields
-    for i in range(Num_Fld_HOTS):
-        STD_HOTS[i] = np.std(HOTS_Obs_Data[i,:,:])
+    NVals = np.load('../NormVals.npy')
 
     # Sum normalized RMSD values to calculate objective function
-    obj = np.sum(Pi_BATS*(RMSD_BATS/STD_BATS)) + np.sum(Pi_HOTS(RMSD_HOTS/STD_HOTS))
+    obj = np.sum(Pi*(RMSD/NVals))
 
 else:
     # Sum RMSD values to calculate objective function
-    obj = np.sum(Pi_BATS*RMSD_BATS) + np.sum(Pi_HOTS*RMSD_HOTS)
+    obj = np.sum(Pi*RMSD)
 
 # How to output data
 ofile = open('result.out','w')
