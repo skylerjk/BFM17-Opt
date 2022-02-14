@@ -35,7 +35,7 @@ Num_Prms = sum(1 for bl in PC if eval(bl))
 Norm_Val_Opt = np.zeros(Num_Prms)
 
 # Read Optimal Parameter Values from File
-with open('PrmSet.txt.txt') as readFile:
+with open('PrmSet.txt') as readFile:
     for i, line in enumerate(readFile):
         if (i > 4) and (i < 34):
             Norm_Val_Opt[i-5] = line
