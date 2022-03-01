@@ -40,7 +40,7 @@ Temp = np.load('../ObsBATS/PON_1yr_climatology.npy')
 Obs_Ref_Data[5,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Total Organic Particulate Matter Data - Phosphorous
-Temp = np.load('../ObsBATS/PON_1yr_climatology.npy')
+Temp = np.load('../ObsBATS/POP_1yr_climatology.npy')
 Obs_Ref_Data[6,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Net Primary Production Data

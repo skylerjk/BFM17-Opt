@@ -42,7 +42,7 @@ Temp = np.load('../ObsBATS/PON_1yr_climatology.npy')
 BATS_Obs_Data[5,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Total Organic Particulate Matter Data - Phosphorous
-Temp = np.load('../ObsBATS/PON_1yr_climatology.npy')
+Temp = np.load('../ObsBATS/POP_1yr_climatology.npy')
 BATS_Obs_Data[6,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Net Primary Production Data
@@ -203,7 +203,7 @@ N = 12.0*150.0
 RMSD_BATS = np.sqrt(np.sum(np.sum((BATS_Avg_Data - BATS_Obs_Data)**2, axis = 2), axis = 1)/N)
 RMSD_HOTS = np.sqrt(np.sum(np.sum((HOTS_Avg_Data - HOTS_Obs_Data)**2, axis = 2), axis = 1)/N)
 
-RMSD = np.concatentate((RMSD_BATS,RMSD_HOTS))
+RMSD = np.concatenate((RMSD_BATS,RMSD_HOTS))
 Pi = np.concatenate((Pi_BATS,Pi_HOTS))
 
 if Flag_Norm:
