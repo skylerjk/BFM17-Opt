@@ -1,5 +1,9 @@
 import numpy as np
 import os
+import sys
+
+# Control Flag for Site Control ()
+Flag_SC = sys.argv[1]
 
 # Namelist Dictionary defines which parameters are in a given namelist file
 Namelist_Dictionary = {
@@ -37,7 +41,7 @@ Norm_Val_Opt = np.zeros(Num_Prms)
 # Read Optimal Parameter Values from File
 with open('PrmSet.txt') as readFile:
     for i, line in enumerate(readFile):
-        if (i > 4) and (i < 34):
+        if (i > 4) and (i < 5+Num_Prms):
             Norm_Val_Opt[i-5] = line
 
 # Declar Array for Run Parameter Values
@@ -52,16 +56,43 @@ for prm in range(51):
 
         cnt += 1
 
-# Generate optimal run directory (OptRun)
-os.system("cp -r Source OptRun")
-os.chdir("OptRun")
+if Flag_SC == 'comb':
+    Sites = ['bats','hots']
 
-# Writing Parameter Values to Namelists
-for i, prm in enumerate(PN):
-    Nml_File = find_key(Namelist_Dictionary, prm)
+    for site in Sites:
 
-    # Replace value of current parameter
-    os.system("sed -i'' \"s/{" + prm + "}/" + str(RV[i]) +"/\" " + Nml_File)
+        # Generate optimal run directory (OptRun)
+        os.system("cp -r Source OptRun_" + site)
+        os.chdir("OptRun_" + site)
 
-# Run Reference Evaluation
-os.system("./pom.exe")
+        # Writing Parameter Values to Namelists
+        for i, prm in enumerate(PN):
+            Nml_File = find_key(Namelist_Dictionary, prm)
+
+            # Replace value of current parameter
+            os.system("sed -i'' \"s/{" + prm + "}/" + str(RV[i]) +"/\" " + Nml_File)
+
+        if site == 'hots':
+            os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" BFM_General.nml")
+            os.system("sed -i'' \"s/inputs_bats/inputs_hots/\" pom_input.nml")
+
+        # Run Reference Evaluation
+        os.system("./pom.exe")
+
+        os.chdir("../")
+
+else:
+
+    # Generate optimal run directory (OptRun)
+    os.system("cp -r Source OptRun")
+    os.chdir("OptRun")
+
+    # Writing Parameter Values to Namelists
+    for i, prm in enumerate(PN):
+        Nml_File = find_key(Namelist_Dictionary, prm)
+
+        # Replace value of current parameter
+        os.system("sed -i'' \"s/{" + prm + "}/" + str(RV[i]) +"/\" " + Nml_File)
+
+    # Run Reference Evaluation
+    os.system("./pom.exe")
