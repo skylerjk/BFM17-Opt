@@ -201,6 +201,8 @@ elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
 
     if PrmVal == 'SmpVals':
         PV_Norm = np.load('SampleDataSet/' + Exprmt + '_PrmVals_best.npy')
+        # Test Values
+        TV = PV_Norm * (UB - LB) + LB
 
     # Copies code for running model with optimized parameters
     os.system("cp Source/RunOptSol.py " + RunDir)
@@ -368,8 +370,14 @@ os.chdir(RunDir + "/RefRun")
 for i, prm in enumerate(PN):
     Nml_File = find_key(Namelist_Dictionary, prm)
     # Replace of current parameter in namelist with nominal value
-    os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
-
+    if Exprmt == 'osse':
+        os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+    else:
+        if PrmVal == 'NomVals':
+            os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+        elif PrmVal == 'SmpVals':
+            os.system("sed -i'' \"s/{" + prm + "}/" + str(TV[i]) +"/\" " + Nml_File)
+            
 # Run Reference Evaluation
 os.system("./pom.exe")
 
