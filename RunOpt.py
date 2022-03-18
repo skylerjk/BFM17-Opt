@@ -65,7 +65,7 @@ LB = np.zeros(51)
 UB = np.zeros(51)
 
 # Parameter Inupute Line Number
-LnPI = 22
+LnPI = 23
 with open('RunCase.in') as readFile:
     for i, line in enumerate(readFile):
         if i == 7:
@@ -81,17 +81,21 @@ with open('RunCase.in') as readFile:
             Option_Cntrl = line.split()
             Exprmt = Option_Cntrl[2]
 
-        if i == 13:
-            # Control whether objective funct. is normalized in OptCase.in
+        if i == 12:
             Option_Cntrl = line.split()
-            Flag_Norm = eval(Option_Cntrl[2])
+            PrmVal = Option_Cntrl[2]
 
         if i == 14:
             # Control whether objective funct. is normalized in OptCase.in
             Option_Cntrl = line.split()
+            Flag_Norm = eval(Option_Cntrl[2])
+
+        if i == 15:
+            # Control whether objective funct. is normalized in OptCase.in
+            Option_Cntrl = line.split()
             NormVal = Option_Cntrl[2]
 
-        if i == 16:
+        if i == 17:
             Option_Cntrl = line.split()
             Flag_MS = eval(Option_Cntrl[2])
 
@@ -112,6 +116,15 @@ with open('RunCase.in') as readFile:
             UB[i-LnPI] = Parameter_Entry[5]
 
 Home = os.getcwd()
+
+# print(RunDir)
+# print(Proc)
+# print(Exprmt)
+# print(PrmVal)
+# print(Flag_Norm)
+# print(NormVal)
+# print(Flag_MS)
+
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Make Optimization Run Directory                                          # #
@@ -164,8 +177,11 @@ if Exprmt == 'osse':
         else:
             PV[iprm] = NV[iprm]
 
-        # Calculate the normalized parameter values: Normalized to range 0 to 1
-        PV_Norm = (PV - LB) / (UB - LB)
+    # Calculate the normalized parameter values: Normalized to range 0 to 1
+    PV_Norm = (PV - LB) / (UB - LB)
+
+    if PrmVal == 'SmpVals':
+        PV_Norm = np.load('SampleDataSet/OSSE_PrmVals_best.npy')
 
     # Number of Days to simulation in OSSE
     os.system("sed -i'' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
@@ -182,6 +198,9 @@ if Exprmt == 'osse':
 elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
     # Calculate normalized nominal parameter values
     PV_Norm = (NV - LB) / (UB - LB)
+
+    if PrmVal == 'SmpVals':
+        PV_Norm = np.load('SampleDataSet/' + Exprmt + '_PrmVals_best.npy')
 
     # Copies code for running model with optimized parameters
     os.system("cp Source/RunOptSol.py " + RunDir)

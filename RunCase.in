@@ -5,14 +5,15 @@
 # string.                                                                      #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # Name of the directory for running study
-RunDir = SRuns/Smpl-51Prm-BATS-NrmWRMSD
+RunDir = ORuns/PEst-51Prm-OSSE-NrmWrSTD
 # Sampling or optimizing (smp/opt)
-Proc = smp
-# Experiment : osse, bats, hots, comb
-Exprmt = bats
+Proc = opt
+# Experiment : osse, bats, hots, comb ( NomVals / SmpVals )
+Exprmt = osse
+PrmVal = SmpVals
 # Normalize Objective Function Switch (True/False) (rSTD/RMSD/othr)
 NormObj = True
-NormVal = RMSD
+NormVal = rSTD
 # Run Multi-Start Parameter Estimation Study (True/False) :
 MltStrt = False
 
