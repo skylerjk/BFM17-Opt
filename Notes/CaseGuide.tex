@@ -1,0 +1,80 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\geometry{left=0.75in,right=0.75in,top=1in,bottom=1in}
+\usepackage{graphicx,placeins}
+\usepackage{indentfirst}
+
+\begin{document}
+
+\begin{table}
+\begin{center}
+\caption{Complete Parameter List for Optimization}
+\label{tab:ListParameters}
+\begin{small}
+\begin{tabular}{ | c | c  c | c c c |}
+\hline
+ No.   	& Parameter 					& Code 		& Nominal value 	& Min Value 	& Max Value	 \\
+\hline
+1	 	& $\varepsilon_{\mathrm{PAR}}$	& p\_PAR 	    	& 0.4 (0.5)			& 0.3			&  0.5 		\\
+2		& $\lambda_w$  				& p\_eps0 	& 0.0435 (0.5)		& 0.04		& 0.047  		\\
+3		& $c_{R^{(2)}}$  				& p\_epsR6 	& 0.1e-3 (0.5)	    	& 0.5e-4		& 0.15e-3  	\\
+4           	& $\varepsilon_Z^{(C)}$           		& p\_pe\_R1c 	& 0.60 (0.2)        	& 0.5          	& 1.0          	 \\
+5            	& $\varepsilon_Z^{(N)}$           		& p\_pe\_R1n 	& 0.72 (0.44)         	& 0.5          	& 1.0          	\\
+6           	& $\varepsilon_Z^{(P)}$           		& p\_pe\_R1p 	& 0.832 (0.664)         	& 0.5          	& 1.0          	\\
+\hline
+7		& $r_P^{(0)}$  			    		& p\_sum 		& 1.6 (0.2)			& 1.0			& 4.0		\\
+8		& $b_P$  						& p\_srs 		& 0.05 (0.5)		& 0.025		& 0.075		\\
+9		& $d_P^{(0)}$  					& p\_sdmo 	& 0.05 (0.5)		& 0.025		& 0.075		\\
+10		& $h_P^{(\mathrm{N,P})}$  		& p\_thdo 		& 0.1 (0.5)			& 0.05		& 0.15 		\\
+11		& $\beta_P$  					& p\_pu\_ea 	& 0.05 (0.5)		& 0.025		& 0.075		\\
+12		& $\gamma_P$  				& p\_pu\_ra 	& 0.05 (0.5)		& 0.025		& 0.075		\\
+13		& $a_P^{(\mathrm{N})}$  			& p\_qun 		& 0.025 (0.5)		& 0.0125		& 0.0375 		\\
+14		& $h_P^{(\mathrm{N})}$    		& p\_lN4 		& 1.5 (0.25) 		& 1.0			& 3.0			\\
+15		& $\phi_N^{(\mathrm{min})}$  		& p\_qnlc 		& 6.87e-3 (0.5) 		& 3.435e-3	& 1.0305e-2 	\\
+16		& $\phi_N^{(\mathrm{opt})}$  		& p\_qncPPY 	& 1.26e-2 (0.5)		& 6.3e-3		& 1.89e-2		\\
+17		& $\phi_N^{(\mathrm{max})}=val\times\phi_N^{(\mathrm{opt})}$   	& p\_xqn 		& 1.5  (0.5)         & 1.0			& 2.0		\\
+18		& $a_P^{(\mathrm{P})}$  			& p\_qup 		& 2.5e-3  (0.5)		& 1.25e-3		& 3.75e-3 		\\
+19		& $\phi_P^{(\mathrm{min})}$ 		& p\_qplc 		& 4.29e-4 (0.5)		& 2.145e-4	& 6.435e-4	\\
+20		& $\phi_P^{(\mathrm{opt})}$ 		& p\_qpcPPY 	& 7.86e-4  (0.5)		& 3.93e-4		& 1.1179e-3	\\
+21		& $\phi_P^{(\mathrm{max})}=val\times\phi_P^{(\mathrm{opt})}$  	& p\_xqp 		& 1.5 (0.5)			& 1.0			& 2.0		\\
+22		& $l_P^{(\mathrm{sink})}$  		& p\_esNI 		& 0.75 (0.66)		& 0.25		& 1.0			\\
+23		& $w_P^{(\mathrm{sink})}$  		& p\_res 		& 0.5 (0.5) 		& 0.25		& 0.75 		\\
+24		& $\alpha_{\mathrm{chl}}^{(0)}$  	& p\_alpha\_chl 	& 1.52e-5 	(0.5)		& 7.6e-6		& 2.28e-5		\\
+25		& $\theta_{\mathrm{chl}}^{(0)}$  	& p\_qlcPPY 	& 0.016 (0.5)		& 0.008		& 0.024		\\
+26		& $c_P$  			        			& p\_epsChla 	& 0.03 (0.5)		& 0.015		& 0.0	45		\\
+\hline
+27		& $b_Z$  						& z\_srs 		& 0.02 (0.25) 		& 0.01		& 0.05		\\
+28		& $r_Z^{(0)}$  					& z\_sum 		& 2.0 (0.25)		& 1.0			& 5.0			\\
+29		& $d_Z^{(0)}$  					& z\_sdo 		& 0.25 (0.5)		& 0.125		& 0.375 		\\
+30		& $d_Z$   						& z\_sd 		& 0.05 (0.5)		& 0.025		& 0.075		\\
+31		& $\eta_Z$  					& z\_pu 		& 0.5 (0.5)			& 0.25		& 0.75		\\
+32		& $\beta_Z$  					& z\_pu\_ea 	& 0.25 (0.5)		& 0.125		& 0.375		\\
+33		& $h_Z^{(O)}$  			    		& z\_chro 		& 0.5 (0.5)			& 0.25		& 0.75		\\
+34		& $h_Z^{(F)}$  	    				& z\_chuc 		& 200.0 (0.25)		& 100.0		& 500.0		\\
+35		& $\mu_{Z}$  			    		& z\_minfood 	& 50.0 (0.5) 		& 25.0		& 75.0		\\
+36		& $\varphi_{\mathrm{P}}^{(\mathrm{opt})}$  	& z\_qpcMIZ 	& 7.862e-4 (0.431) 	& 7.0e-4		& 9.0e-4		\\
+37		& $\varphi_{\mathrm{N}}^{(\mathrm{opt})}$  	& z\_qncMIZ 	& 1.258e-2 (0.258)	& 1.0e-2		& 2.0e-2		\\
+38		& $\delta_{Z,P}$ 				& z\_paPPY 	& 1.0 (1.0)			& 0.5			& 1.0			\\
+\hline
+39		& $\Lambda_{N^{3}}^{(\mathrm{nit})}$   	&p\_sN4N3 	&  0.01 (0.5)	&0.005		&0.015		\\
+40		& $h_N^{(O)}$  						& p\_clO2o	& 10.0 (0.5)	& 5.0			&15.0		\\
+41		& $\xi_{\mathrm{CO}_2}$  			& p\_sR6O3 	& 0.1 (0.125) 		& 0.05		& 0.45		\\
+42		& $\xi_{N^(1)}$  				& p\_sR6N1 	& 0.1 (0.125)		& 0.05		& 0.45		\\
+43		& $\xi_{N^(3)}$  				& p\_sR6N4 	& 0.1 (0.125)		& 0.05		& 0.45		\\
+44		& $\zeta_{\mathrm{CO}_2}$  		& p\_sR1O3 	& 0.05 (0.0)		& 0.05		& 0.45		\\
+45		& $\zeta_{N^(1)}$  				& p\_sR1N1 	& 0.05 (0.0)		& 0.05		& 0.45 		\\
+46		& $\zeta_{N^(3)}$  				& p\_sR1N4 	& 0.05 (0.0)		& 0.05		& 0.45		\\
+47		& $v^{(\mathrm{set})}$  			& p\_rR6m 	& 1.0 (0.1)			& 0.5			& 5.5			\\
+\hline
+48		& $\lambda_O$  				& NRT\_o2o 	& 0.06 (0.12)		& 0.0			& 0.5			\\
+49		& $\lambda_{N^{1}}$  			& NRT\_n1p 	& 0.06 (0.12)		& 0.0			& 0.5			\\
+50		& $\lambda_{N^{2}}$  			& NRT\_n3n 	& 0.06 (0.12)		& 0.0			& 0.5			\\
+51		& $\kappa_{N^{3}}$  				& NRT\_n4n  	& 0.05 (0.1)		& 0.0			& 0.5			\\
+\hline
+\end{tabular}
+\end{small}
+\end{center}
+\end{table}
+
+\end{document}
