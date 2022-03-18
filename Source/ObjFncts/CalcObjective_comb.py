@@ -51,7 +51,7 @@ BATS_Obs_Data[7,:,:] = Temp[0:150,:].transpose()
 Temp = None
 
 # Field Wieghting
-Pi_BATS = np.array([ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+Pi_BATS = np.array([ 1.0, 1.0, 1.0, 1.0, 1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0])
 
 # # Model Data # #
 
@@ -141,7 +141,7 @@ HOTS_Obs_Data[9,:,:] = Temp[0:150,:].transpose()
 Temp = None
 
 # Field Wieghting
-Pi_HOTS = np.array([ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+Pi_HOTS = np.array([ 1.0, 1.0, 1.0, 1.0, 1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0/3.0])
 
 # # Model Data # #
 

@@ -47,7 +47,7 @@ RMSD = np.sqrt(np.sum(np.sum((BGC_Tst_Data - BGC_Ref_Data)**2, axis = 2), axis =
 
 if Flag_Norm:
     # Load normalization values from nominal case
-    NormVals = np.load('NormVals.npy')
+    NormVals = np.load('../NormVals.npy')
 
     # Sum normalized RMSD values to calculate objective function
     obj = np.sum(RMSD/NormVals)
