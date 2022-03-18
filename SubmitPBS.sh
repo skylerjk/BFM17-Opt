@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#PBS -N BFM17-OptRun
+#PBS -N RunName
 #PBS -A UCUB0079
-#PBS -q regular
+#PBS -q economy
 #PBS -l walltime=12:00:00
-#PBS -l select=01:ncpus=29:mpiprocs=32
+#PBS -l select=01:ncpus=36:mpiprocs=36
 
 module purge
 module load gnu
