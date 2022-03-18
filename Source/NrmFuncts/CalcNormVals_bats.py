@@ -61,7 +61,7 @@ if NormVal == 'rSTD':
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Loading model data from output file *.nc                                 # #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-elif NormVal == 'iRMSD':
+elif NormVal == 'RMSD':
     # Output DataFile
     NC_File_Location = 'bfm17_pom1d.nc'
     # Load the set of data

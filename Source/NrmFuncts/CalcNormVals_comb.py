@@ -109,7 +109,7 @@ if NormVal == 'rSTD':
 
         NVals = np.concatenate((rSTD_BATS, rSTD_HOTS))
 
-elif NormVal == 'iRMSD':
+elif NormVal == 'RMSD':
     # # Model Data # #
 
     # LOADing BATS Model Data

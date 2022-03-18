@@ -66,7 +66,7 @@ if NormVal == 'rSTD':
 
     NVals = np.copy(rSTD)
 
-elif NormVal == 'iRMSD':
+elif NormVal == 'RMSD':
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Loading model data from output file *.nc                                 # #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
