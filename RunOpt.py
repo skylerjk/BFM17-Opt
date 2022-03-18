@@ -133,7 +133,7 @@ Home = os.getcwd()
 os.system("mkdir " + RunDir)
 
 # Keep copy of OptCase.in in run directory
-os.system("cp OptCase.in " + RunDir)
+os.system("cp RunCase.in " + RunDir)
 
 # Copy source code to compile BFM17 + POM1D
 os.system("cp -r Source/Source-BFMPOM " + RunDir + "/Config")
