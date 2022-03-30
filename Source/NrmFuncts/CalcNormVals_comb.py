@@ -99,12 +99,12 @@ if NormVal == 'rSTD':
         rSTD_BATS = np.zeros(Num_Fld_BATS)
         # Calculating the standard deviation each obs field
         for i in range(Num_Fld_BATS):
-            rSTD_BATS[i] = np.std(BATS_Ref_Data[i,:,:])
+            rSTD_BATS[i] = np.std(BATS_Obs_Data[i,:,:])
 
         rSTD_HOTS = np.zeros(Num_Fld_HOTS)
         # Calculating the standard deviation each obs field
         for i in range(Num_Fld_HOTS):
-            rSTD_HOTS[i] = np.std(HOTS_Ref_Data[i,:,:])
+            rSTD_HOTS[i] = np.std(HOTS_Obs_Data[i,:,:])
 
 
         NVals = np.concatenate((rSTD_BATS, rSTD_HOTS))
