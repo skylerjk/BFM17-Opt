@@ -110,10 +110,17 @@ with open('RunCase.in') as readFile:
             PC.append(eval(Parameter_Entry[2]))
             # Assign Parameter Nominal Value
             NV[i-LnPI] = Parameter_Entry[3]
-            # Assign Parameter Lower Boundary
-            LB[i-LnPI] = Parameter_Entry[4]
-            # Assign Parameter Upper Boundary
-            UB[i-LnPI] = Parameter_Entry[5]
+
+            if Exprmt == 'osse':
+                # Assign Parameter Lower Boundary
+                LB[i-LnPI] = NV[i-LnPI] - 0.25 * NV[i-LnPI]
+                # Assign Parameter Upper Boundary
+                UB[i-LnPI] = NV[i-LnPI] + 0.25 * NV[i-LnPI]
+            else:
+                # Assign Parameter Lower Boundary
+                LB[i-LnPI] = Parameter_Entry[4]
+                # Assign Parameter Upper Boundary
+                UB[i-LnPI] = Parameter_Entry[5]
 
 Home = os.getcwd()
 
@@ -124,7 +131,6 @@ Home = os.getcwd()
 # print(Flag_Norm)
 # print(NormVal)
 # print(Flag_MS)
-
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Make Optimization Run Directory                                          # #
@@ -148,6 +154,13 @@ os.system("cp -r Source/Source-Run " + RunDir + "/Source")
 
 # Put executable in template folder
 os.system("cp " + RunDir + "/Config/bin/pom.exe " + RunDir + "/Source")
+
+if NormVal == 'othr':
+    # Copy objective function calculator to template directory
+    os.system("cp Source/ObjFncts/CalcObjective2_" + Exprmt + ".py " + RunDir + "/Source/CalcObjective.py")
+else:
+    # Copy objective function calculator to template directory
+    os.system("cp Source/ObjFncts/CalcObjective_" + Exprmt + ".py " + RunDir + "/Source/CalcObjective.py")
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Generate Optimization Case - Complete Run Directory                      # #
@@ -200,9 +213,14 @@ elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
     PV_Norm = (NV - LB) / (UB - LB)
 
     if PrmVal == 'SmpVals':
-        PV_Norm = np.load('SampleDataSet/' + Exprmt + '_PrmVals_best.npy')
-        # Test Values
-        TV = PV_Norm * (UB - LB) + LB
+        TV_Norm = np.load('SampleDataSet/' + Exprmt + '_PrmVals_best.npy')
+
+        for iprm, prm_val in enumerate(NV):
+            if PC[iprm]:
+                PV_Norm[iprm] = TV_Norm[iprm]
+
+        # Test Values - If wanting ref run to use smpl vals
+        # TV = PV_Norm * (UB - LB) + LB
 
     # Copies code for running model with optimized parameters
     os.system("cp Source/RunOptSol.py " + RunDir)
@@ -255,7 +273,7 @@ if Proc == 'smp':
 
     os.system("sed -i'' 's/DI_MTHD/sampling/' " + RunDir + "/dakota.in")
     os.system("sed -i'' 's/DI_CT/sample_type lhs/' " + RunDir + "/dakota.in")
-    os.system("sed -i'' 's/DI_FE/samples = 15000/' " + RunDir + "/dakota.in")
+    os.system("sed -i'' 's/DI_FE/samples = 25000/' " + RunDir + "/dakota.in")
     os.system("sed -i'' 's/DI_LS/seed = 26862/' " + RunDir + "/dakota.in")
 
     os.system("sed -i'' '/DI_MI/d' " + RunDir + "/dakota.in")
@@ -304,7 +322,7 @@ elif Proc == 'opt':
     # Optimization Method : Opt++ Quasi-Newton Method
     os.system("sed -i'' 's/DI_MTHD/optpp_q_newton/' " + RunDir + "/dakota.in")
     # Convergence Criteria :
-    os.system("sed -i'' 's/DI_CT/convergence_tolerance = 1.e-6/' " + RunDir + "/dakota.in")
+    os.system("sed -i'' 's/DI_CT/convergence_tolerance = 1.e-4/' " + RunDir + "/dakota.in")
     # Max Number of Iterations
     os.system("sed -i'' 's/DI_MI/max_iterations = 50000/' " + RunDir + "/dakota.in")
     # Max Number of Model Evaluations
@@ -370,14 +388,17 @@ os.chdir(RunDir + "/RefRun")
 for i, prm in enumerate(PN):
     Nml_File = find_key(Namelist_Dictionary, prm)
     # Replace of current parameter in namelist with nominal value
-    if Exprmt == 'osse':
-        os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
-    else:
-        if PrmVal == 'NomVals':
-            os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
-        elif PrmVal == 'SmpVals':
-            os.system("sed -i'' \"s/{" + prm + "}/" + str(TV[i]) +"/\" " + Nml_File)
-            
+    os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+
+    # CODE FOR IF SMPL VALS USED FOR REF RUN #
+    # if Exprmt == 'osse':
+    #     os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+    # else:
+    #     if PrmVal == 'NomVals':
+    #         os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+    #     elif PrmVal == 'SmpVals':
+    #         os.system("sed -i'' \"s/{" + prm + "}/" + str(TV[i]) +"/\" " + Nml_File)
+
 # Run Reference Evaluation
 os.system("./pom.exe")
 
@@ -409,18 +430,8 @@ if Flag_Norm:
 # Return to home directory
 os.chdir(Home)
 
-# End of Reference Run
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-
 # Move interface to template directory
 os.system("cp Source/interface.py " + RunDir + "/Source/interface.py")
-if NormVal == 'othr':
-    # Copy objective function calculator to template directory
-    os.system("cp Source/ObjFncts/CalcObjective2_" + Exprmt + ".py " + RunDir + "/Source/CalcObjective.py")
-else:
-    # Copy objective function calculator to template directory
-    os.system("cp Source/ObjFncts/CalcObjective_" + Exprmt + ".py " + RunDir + "/Source/CalcObjective.py")
-
 # Copy objective function calculator to template directory
 os.system("cp Source/ResubmitPBS.sh " + RunDir)
 
