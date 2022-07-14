@@ -215,9 +215,11 @@ elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
     if PrmVal == 'SmpVals':
         TV_Norm = np.load('SampleDataSet/' + Exprmt + '_PrmVals_best.npy')
 
+        iprm_sv = 0
         for iprm, prm_val in enumerate(NV):
             if PC[iprm]:
-                PV_Norm[iprm] = TV_Norm[iprm]
+                PV_Norm[iprm] = TV_Norm[iprm_sv]
+                iprm_sv += 1
 
         # Test Values - If wanting ref run to use smpl vals
         # TV = PV_Norm * (UB - LB) + LB
