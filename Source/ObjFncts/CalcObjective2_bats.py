@@ -49,7 +49,7 @@ Obs_Ref_Data[7,:,:] = Temp[0:150,:].transpose()
 Temp = None
 
 # Field Wieghting
-Pi = np.array([ 1.0, 1.0, 1.0, 1.0, 1.0/3.0, 1.0/3.0, 1.0/3.0, 1.0])
+Pi = np.array([ 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0])
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Loading model data from output file *.nc                                 # #

@@ -53,7 +53,11 @@ if NormVal == 'rSTD':
     rSTD = np.zeros(Num_Fld)
     # Calculating the standard deviation each obs field
     for i in range(Num_Fld):
+        # Take the standard deviation of all observational data
         rSTD[i] = np.std(Obs_Ref_Data[i,:,:])
+
+        # Take the average of depth dependent STD values
+        # rSTD[i] = np.mean(np.std(Obs_Ref_Data[i,:,:], axis = 0))
 
 
     NVals = np.copy(rSTD)
