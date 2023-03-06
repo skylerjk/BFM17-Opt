@@ -1,9 +1,9 @@
 close all; clear all; clc
 
 %% Directory and file names %%
-dir = '../../Analysis/PlotSiteData/Data-BATS/Data_Opt_ML/';
+dir = '../../Analysis/PlotSiteData/Data-BATS/Data_ML/';
 dir_org = '../../BFM17_POM1D/bfm_run/bfm17_pom1d_bats/';
-dir_opt = '../MS-Runs/BATS-29Prm-6objs-NrmRfSTD/OptRun/';
+dir_opt = '../../BFM17-OptRuns-Past/MS-Runs/BATS-29Prm-6objs-NrmRfSTD/OptRun/';
 
 %% Figure data format %%
 depth  = 150;                                 %plotting depth
