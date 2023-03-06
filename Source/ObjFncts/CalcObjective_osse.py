@@ -7,8 +7,6 @@ import sys
 State_Variables = ['P2l','P2c','P2n','P2p','Z5c','Z5n','Z5p','R1c','R1n','R1p','R6c','R6n','R6p','N1p','N3n','N4n','O2o']
 
 depth = 150
-# Num_Days = 360
-# Sim_Days = 1080
 Num_Days = 30
 Sim_Days = 30
 Num_SVar = len(State_Variables)
@@ -31,12 +29,13 @@ BGC_Ref_Data = np.zeros([Num_SVar,depth,Num_Days])
 BGC_Tst_Data = np.zeros([Num_SVar,depth,Num_Days])
 
 for i, var in enumerate(State_Variables):
+    # Load Reference Data
     Temp_Ref[i,:,:] = NC_Ref_Data[var][:]
-    # BGC_Ref_Data[i,:,:] = Temp_Ref[i,-360:,:].transpose()
-    #
+    
+    # Load Test Data
     Temp_Tst[i,:,:] = NC_Tst_Data[var][:]
-    # BGC_Tst_Data[i,:,:] = Temp_Tst[i,-360:,:].transpose()
-    #
+    
+    # Assign data to array for analysis
     BGC_Ref_Data[i,:,:] = Temp_Ref[i,:,:].transpose()
     BGC_Tst_Data[i,:,:] = Temp_Tst[i,:,:].transpose()
 

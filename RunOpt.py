@@ -114,8 +114,10 @@ with open('RunCase.in') as readFile:
             if Exprmt == 'osse':
                 # Assign Parameter Lower Boundary
                 LB[i-LnPI] = NV[i-LnPI] - 0.25 * NV[i-LnPI]
+                # LB[i-LnPI] = Parameter_Entry[4]
                 # Assign Parameter Upper Boundary
                 UB[i-LnPI] = NV[i-LnPI] + 0.25 * NV[i-LnPI]
+                # UB[i-LnPI] = Parameter_Entry[5]
             else:
                 # Assign Parameter Lower Boundary
                 LB[i-LnPI] = Parameter_Entry[4]
@@ -194,10 +196,11 @@ if Exprmt == 'osse':
     PV_Norm = (PV - LB) / (UB - LB)
 
     if PrmVal == 'SmpVals':
-        PV_Norm = np.load('SampleDataSet/OSSE_PrmVals_best.npy')
+        PV_Norm = np.load('SampleDataSetV2/TSE_full/TSE_fullopt_T0.npy')
 
     # Number of Days to simulation in OSSE
-    os.system("sed -i'' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
+    # os.system("sed -i'' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
+    os.system("sed -i'' \"s/{SimDays}/1080/\" " + RunDir + "/Source/params_POMBFM.nml")
 
     # Put input data from the BATS site into opt dir
     os.system("cp -r Source/inputs_bats " + RunDir )
@@ -381,6 +384,11 @@ np.save(RunDir + "/PValues", np.array([NV,LB,UB]))
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # Perform Reference Model Run
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+
+# This is a run of the model which acts as a baseline against randomly sampled
+# runs are compared, in the case of a TSE this acts as the reference data used
+# to calculate the objective function, including the normalization values.
+
 # Generate reference run directory (RefRun)
 os.system("cp -r " + RunDir + "/Source " + RunDir + "/RefRun")
 
@@ -392,21 +400,32 @@ for i, prm in enumerate(PN):
     # Replace of current parameter in namelist with nominal value
     os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
 
-    # CODE FOR IF SMPL VALS USED FOR REF RUN #
-    # if Exprmt == 'osse':
-    #     os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
-    # else:
-    #     if PrmVal == 'NomVals':
-    #         os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
-    #     elif PrmVal == 'SmpVals':
-    #         os.system("sed -i'' \"s/{" + prm + "}/" + str(TV[i]) +"/\" " + Nml_File)
-
 # Run Reference Evaluation
 os.system("./pom.exe")
 
 if Exprmt == 'osse':
     # Move Reference Run to template directory
     os.system("cp bfm17_pom1d.nc ../Source/bfm17_pom1d-ref.nc ")
+
+    # Run case with known perturbation from baseline case for comparison to
+    # randomly sampled runs. Analogous to comparison to baseline case in
+    # standard optimization runs.
+    if Proc == 'smp':
+        os.chdir("../")
+        os.system("cp -r Source SmpRun")
+
+        # Input nominal set of parameter values
+        os.chdir("SmpRun")
+        # Writing Parameter Values to Namelists
+        for i, prm in enumerate(PN):
+            Nml_File = find_key(Namelist_Dictionary, prm)
+            # Replace of current parameter in namelist with nominal value
+            os.system("sed -i'' \"s/{" + prm + "}/" + str(PV[i]) +"/\" " + Nml_File)
+
+        # Run Reference Evaluation
+        os.system("./pom.exe")
+
+        os.chdir("../RefRun")
 
 elif Exprmt == 'comb':
     # Move BATS model evaluation data to new file reference
