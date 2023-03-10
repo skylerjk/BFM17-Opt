@@ -124,15 +124,8 @@ with open('RunCase.in') as readFile:
                 # Assign Parameter Upper Boundary
                 UB[i-LnPI] = Parameter_Entry[5]
 
+# Set Home Dir to current dir
 Home = os.getcwd()
-
-# print(RunDir)
-# print(Proc)
-# print(Exprmt)
-# print(PrmVal)
-# print(Flag_Norm)
-# print(NormVal)
-# print(Flag_MS)
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Make Optimization Run Directory                                          # #
@@ -181,13 +174,13 @@ if Exprmt == 'osse':
             # Random Perturbation within +/- of max percentage
             # PV[iprm] = NV[iprm] + round(random.uniform(-MaxPert,MaxPert),4) * NV[iprm]
 
-            # Correct val if perturbation moved normalized value out of bounds
-            if PV[iprm] > UB[iprm]:
-                # PV[iprm] = NV[iprm] - 0.05 * NV[iprm]
-                PV[iprm] = UB[iprm]
-            elif PV[iprm] < LB[iprm]:
-                # PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
-                PV[iprm] = LB[iprm]
+            # # Correct val if perturbation moved normalized value out of bounds
+            # if PV[iprm] > UB[iprm]:
+            #     # If perturbed value is greater than upper bound, set to upper bound
+            #     PV[iprm] = UB[iprm]
+            # elif PV[iprm] < LB[iprm]:
+            #     # If perturbed values is less than lower bound, set to lower bound
+            #     PV[iprm] = LB[iprm]
 
         else:
             PV[iprm] = NV[iprm]
@@ -199,8 +192,8 @@ if Exprmt == 'osse':
         PV_Norm = np.load('SampleDataSetV2/TSE_full/TSE_fullopt_T0.npy')
 
     # Number of Days to simulation in OSSE
-    # os.system("sed -i'' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
-    os.system("sed -i'' \"s/{SimDays}/1080/\" " + RunDir + "/Source/params_POMBFM.nml")
+    os.system("sed -i'' \"s/{SimDays}/30/\" " + RunDir + "/Source/params_POMBFM.nml")
+    # os.system("sed -i'' \"s/{SimDays}/1080/\" " + RunDir + "/Source/params_POMBFM.nml")
 
     # Put input data from the BATS site into opt dir
     os.system("cp -r Source/inputs_bats " + RunDir )
