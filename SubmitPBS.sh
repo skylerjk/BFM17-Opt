@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -N RunName
-#PBS -A UCUB0079
+#PBS -A ProjCode
 #PBS -q economy
 #PBS -l walltime=12:00:00
 #PBS -l select=01:ncpus=36:mpiprocs=36
