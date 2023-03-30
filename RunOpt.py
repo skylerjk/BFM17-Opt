@@ -2,10 +2,12 @@
 # Script : RunOpt_V3.py                                                        #
 #                                                                              #
 # Description :                                                                #
-# This script produces
+# This script produces                                                         #
 #                                                                              #
 # Development History :                                                        #
-# Skyler Kern - October 20, 2021                                               #
+# Skyler Kern                                                                  #
+# Initial Development :     October 20, 2021                                   #
+# Most Recent Update :      March 30, 2023                                     #
 #                                                                              #
 # Institution :                                                                #
 # This was created in support of research done in the Turbulence and Energy    #
@@ -64,7 +66,7 @@ LB = np.zeros(51)
 # Parameter Upper Bound
 UB = np.zeros(51)
 
-# Parameter Inupute Line Number
+# Parameter Input Line Number
 LnPI = 23
 with open('RunCase.in') as readFile:
     for i, line in enumerate(readFile):
@@ -171,16 +173,13 @@ if Exprmt == 'osse':
             # Constant Perturbation from nominal values
             PV[iprm] = NV[iprm] + MaxPert * NV[iprm]
 
-            # Random Perturbation within +/- of max percentage
-            # PV[iprm] = NV[iprm] + round(random.uniform(-MaxPert,MaxPert),4) * NV[iprm]
-
-            # # Correct val if perturbation moved normalized value out of bounds
-            # if PV[iprm] > UB[iprm]:
-            #     # If perturbed value is greater than upper bound, set to upper bound
-            #     PV[iprm] = UB[iprm]
-            # elif PV[iprm] < LB[iprm]:
-            #     # If perturbed values is less than lower bound, set to lower bound
-            #     PV[iprm] = LB[iprm]
+            # Correct val if perturbation moved normalized value out of bounds
+            if PV[iprm] > UB[iprm]:
+                # If perturbed value is greater than upper bound, set to upper bound
+                PV[iprm] = UB[iprm]
+            elif PV[iprm] < LB[iprm]:
+                # If perturbed values is less than lower bound, set to lower bound
+                PV[iprm] = LB[iprm]
 
         else:
             PV[iprm] = NV[iprm]
@@ -216,9 +215,6 @@ elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
             if PC[iprm]:
                 PV_Norm[iprm] = TV_Norm[iprm_sv]
                 iprm_sv += 1
-
-        # Test Values - If wanting ref run to use smpl vals
-        # TV = PV_Norm * (UB - LB) + LB
 
     # Copies code for running model with optimized parameters
     os.system("cp Source/RunOptSol.py " + RunDir)

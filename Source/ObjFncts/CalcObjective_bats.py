@@ -100,7 +100,7 @@ for f in range(Num_Fld):
 # 11 months range(0,11)
 # 8 months [0,2,3,5,6,8,9,11]
 # 6 months range(0,12,2)
-mon = range(0,11)
+mon = range(0,12)
 # Number of Months
 NM = float(len(mon))
 # Number of Data Points
