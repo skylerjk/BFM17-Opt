@@ -1,10 +1,10 @@
 # Automatic Parameter Estimation of the 17 State Variable Biogeochemical Flux Model (BFM17)
 
-This code has everything that is needed to perform an optimization of the Biogeochemical Flux Model with 17 state variables (BFM17) coupled to the 1D Princeton Ocean Model using the DAKOTA numberical toolbox. The methodology suggested in the work this code supports has three steps: (1) the parameter space is randomly sampled, (2) the 10 best parameter sets are used to initialize local gradient based optimization runs, and (3) the best optimized case is used as our final optimized solution. The code here is able to run the random sampling using random hypercube sampling provided by DAKOTA and running the optimization using a quasi-Newton optimization algorithm from the OPT++ library in the code. 
+This code has everything that is needed to perform an optimization of the Biogeochemical Flux Model with 17 state variables (BFM17) coupled to the 1D Princeton Ocean Model using the DAKOTA numberical toolbox. The methodology suggested in the work this code supports has three steps: (1) the parameter space is randomly sampled, (2) the N_top best parameter sets are used to initialize local gradient based optimization runs, and (3) the best optimized case is used as our final optimized solution. The code here is able to run the random sampling using random hypercube sampling provided by DAKOTA and running the optimization using a quasi-Newton optimization algorithm from the OPT++ library in the code. 
 
-Note that much of this work was run on a supercomputer so the work was initialized using the submit script SubmitPBS.sh. However, if your local environment is set up correctly you will be able to run the program using the command:
+Note that much of this work was run on a supercomputer so the work was initialized using the submit script Submit.sh. Run the program using the command:
 
->> python RunOpt.py 
+>> ./Submit.sh
 
 To run this you will need to have an environment set up to run the set-up script, DAKOTA, the interface, and BFM17+POM1D. The set-up, interface, and objective function calculator are written in python. Your python environment will require the numpy, os, sys, random, and netCDF libraries. DAKOTA will need to be downloaded and compiled so it can be called using the command 'dakota' or the command will need to be updated in RunOpt.py. As part of the set-up BFM17+POM1D is compiled producing an executable that can be run in the local environment. For BFM17+POM1D to be successfully compiled, you need to have the GNU Fortran compiler (set FD and LD in Source/Source-BFMPOM/compilers/gfortran.inc to the local command if not gfortran), OpenMPI, and NetCDF.
 
