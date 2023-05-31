@@ -4,7 +4,7 @@ import sys
 
 # Namelist Dictionary defines which parameters are in a given namelist file
 Namelist_Dictionary = {
-  'BFM_General.nml' : ['p_PAR', 'p_eps0', 'p_epsR6', 'p_pe_R1c', 'p_pe_R1n', 'p_pe_R1p'],
+  'BFM_General.nml' : ['p_PAR', 'p_eps0', 'p_epsR6', 'p_pe_R1c', 'p_pe_R1n', 'p_pe_R1p','SchmidtO2','d_wan'],
   'Pelagic_Ecology.nml' : ['p_sum', 'p_srs', 'p_sdmo', 'p_thdo', 'p_pu_ea', 'p_pu_ra', \
   'p_qun', 'p_lN4', 'p_qnlc', 'p_qncPPY', 'p_xqn', 'p_qup', 'p_qplc', 'p_qpcPPY', \
   'p_xqp', 'p_esNI', 'p_res', 'p_alpha_chl', 'p_qlcPPY', 'p_epsChla', 'z_srs', 'z_sum', \
@@ -12,7 +12,7 @@ Namelist_Dictionary = {
   'z_qncMIZ', 'z_paPPY'],
   'Pelagic_Environment.nml' : ['p_sN4N3', 'p_clO2o', 'p_sR6O3', 'p_sR6N1', 'p_sR6N4', \
   'p_sR1O3', 'p_sR1N1', 'p_sR1N4', 'p_rR6m'],
-  'params_POMBFM.nml' : ['NRT_o2o', 'NRT_n1p', 'NRT_n3n', 'NRT_n4n']
+  'params_POMBFM.nml' : ['NRT_o2o', 'NRT_n1p', 'NRT_n3n', 'NRT_n4n','A1','B1','A2','B2','C1','E1','E2']
 }
 
 # Function to return Key for parameter Dictionary
@@ -34,6 +34,9 @@ PN, PC = np.load('../PControls.npy')
 # Load the Parameter Values
 NV, LB, UB = np.load('../PValues.npy')
 
+# Number of Parameters Possible
+NumPrms = len(PN)
+
 # Run Parameter Values
 RV = np.copy(NV)
 
@@ -41,11 +44,11 @@ with open('params.in') as readFile:
     for i, line in enumerate(readFile):
         if i == 0:
             Parameter_Entry = line.split()
-            Num_Prms = int(Parameter_Entry[3])
+            OptVar = int(Parameter_Entry[3])
 
             Parameter_Names = []
-            Norm_Val = np.zeros(Num_Prms)
-        if (i >= 1) and (i < 1+Num_Prms) :
+            Norm_Val = np.zeros(OptVar)
+        if (i >= 1) and (i < 1+OptVar) :
             Parameter_Entry = line.split()
             # Parameter Value - Normalized
             Norm_Val[i-1] = Parameter_Entry[3]
@@ -58,7 +61,7 @@ with open('params.in') as readFile:
 
 # Calculate Parameter value for input
 cnt = 0
-for prm in range(51):
+for prm in range(NumPrms):
     if eval(PC[prm]):
         RV[prm] = Norm_Val[cnt] * (UB[prm]-LB[prm]) + LB[prm]
 

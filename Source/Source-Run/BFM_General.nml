@@ -49,6 +49,8 @@
     p_qon_nitri                  =  2.0
     p_poro0                      =  0.75
     p_d_tot                      =  0.30
+    SchmidtO2                    =  {SchmidtO2}
+    d_wan                        =  {d_wan}
 /
 
 ! Benthic Parameters !

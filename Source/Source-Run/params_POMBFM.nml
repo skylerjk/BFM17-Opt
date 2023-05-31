@@ -26,3 +26,16 @@ SRT     =  1
 UPPERH  =  5.0
 SSRT    =  5.68
 /
+
+&Params_POM
+A1 = {A1}
+B1 = {B1}
+A2 = {A2}
+B2 = {B2}
+C1 = {C1}
+E1 = {E1}
+E2 = {E2}
+E3 = 1.0
+/
+
+! End of Namelist File

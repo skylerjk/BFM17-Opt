@@ -18,35 +18,35 @@ Num_Fld_BATS = 8
 BATS_Obs_Data = np.zeros([Num_Fld_BATS,12,depth])
 
 # Chlorophyll Data
-Temp = np.load('../ObsBATS/Chla_1yr_climatology.npy')
+Temp = np.load('ObsBATS/Chla_1yr_climatology.npy')
 BATS_Obs_Data[0,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Oxygen Data
-Temp = np.load('../ObsBATS/Oxy_1yr_climatology.npy')
+Temp = np.load('ObsBATS/Oxy_1yr_climatology.npy')
 BATS_Obs_Data[1,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Nitrate Data
-Temp = np.load('../ObsBATS/Nitrate_1yr_climatology.npy')
+Temp = np.load('ObsBATS/Nitrate_1yr_climatology.npy')
 BATS_Obs_Data[2,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Phosphate Data
-Temp = np.load('../ObsBATS/Phos_1yr_climatology.npy')
+Temp = np.load('ObsBATS/Phos_1yr_climatology.npy')
 BATS_Obs_Data[3,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Total Organic Particulate Matter Data - Carbon
-Temp = np.load('../ObsBATS/POC_1yr_climatology.npy')
+Temp = np.load('ObsBATS/POC_1yr_climatology.npy')
 BATS_Obs_Data[4,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Total Organic Particulate Matter Data - Nitrogen
-Temp = np.load('../ObsBATS/PON_1yr_climatology.npy')
+Temp = np.load('ObsBATS/PON_1yr_climatology.npy')
 BATS_Obs_Data[5,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Total Organic Particulate Matter Data - Phosphorous
-Temp = np.load('../ObsBATS/POP_1yr_climatology.npy')
+Temp = np.load('ObsBATS/POP_1yr_climatology.npy')
 BATS_Obs_Data[6,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Net Primary Production Data
-Temp = np.load('../ObsBATS/NPP_1yr_climatology.npy')
+Temp = np.load('ObsBATS/NPP_1yr_climatology.npy')
 BATS_Obs_Data[7,:,:] = Temp[0:150,:].transpose()
 Temp = None
 
@@ -55,43 +55,43 @@ Num_Fld_HOTS = 10
 HOTS_Obs_Data = np.zeros([Num_Fld_HOTS,12,depth])
 
 # Chlorophyll Data
-Temp = np.load('../ObsHOTS/Chla_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/Chla_1yr_HOTS.npy')
 HOTS_Obs_Data[0,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Oxygen Data
-Temp = np.load('../ObsHOTS/Oxy_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/Oxy_1yr_HOTS.npy')
 HOTS_Obs_Data[1,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Nitrate Data
-Temp = np.load('../ObsHOTS/Nit_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/Nit_1yr_HOTS.npy')
 HOTS_Obs_Data[2,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Phosphate Data
-Temp = np.load('../ObsHOTS/Phs_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/Phs_1yr_HOTS.npy')
 HOTS_Obs_Data[3,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Dissolved Organic Matter Data - Carbon
-Temp = np.load('../ObsHOTS/DOC_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/DOC_1yr_HOTS.npy')
 HOTS_Obs_Data[4,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Dissolved Organic Matter Data - Nitrogen
-Temp = np.load('../ObsHOTS/DON_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/DON_1yr_HOTS.npy')
 HOTS_Obs_Data[5,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Dissolved Organic Matter Data - Phosphorous
-Temp = np.load('../ObsHOTS/DOP_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/DOP_1yr_HOTS.npy')
 HOTS_Obs_Data[6,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Total Organic Particulate Matter Data - Carbon
-Temp = np.load('../ObsHOTS/POC_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/POC_1yr_HOTS.npy')
 HOTS_Obs_Data[7,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Total Organic Particulate Matter Data - Nitrogen
-Temp = np.load('../ObsHOTS/PON_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/PON_1yr_HOTS.npy')
 HOTS_Obs_Data[8,:,:] = Temp[0:150,:].transpose()
 Temp = None
 # Total Organic Particulate Matter Data - Phosphorous
-Temp = np.load('../ObsHOTS/POP_1yr_HOTS.npy')
+Temp = np.load('ObsHOTS/POP_1yr_HOTS.npy')
 HOTS_Obs_Data[9,:,:] = Temp[0:150,:].transpose()
 Temp = None
 

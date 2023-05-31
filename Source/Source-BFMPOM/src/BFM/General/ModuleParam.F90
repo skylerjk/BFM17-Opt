@@ -135,6 +135,8 @@
   !               mmolN]       denitrification 
   ! p_qon_nitri  [mmolO2/      Stoichiometric coefficient for 
   !               mmolN]       nitrification (3/2)
+  ! SchmidtO2                  Ref Schmidt number for O2 aeration parameterization
+  ! d_wan                      Coefficient for Wannikhof aeration parameterization
   !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   ! Pelagic model parameters
@@ -154,7 +156,9 @@
       p_pe_R1s=0.06_RLEN  ,  &
       p_qro=0.5_RLEN,  &  
       p_qon_dentri=1.25_RLEN, &  
-      p_qon_nitri=1.5_RLEN
+      p_qon_nitri=1.5_RLEN,   &
+      SchmidtO2 = 660.0_RLEN, &
+      d_wan = 0.31_RLEN  
 
   !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   ! Benthic model parameters
@@ -221,8 +225,9 @@
     p_PAR, slp0, ChlDynamicsFlag, LightPeriodFlag, LightLocationFlag,         &
     p_eps0, p_epsESS, p_sedlevels, p_sedsigma,                                &
     p_pe_R1c, p_pe_R1n, p_pe_R1p, p_pe_R1s,                                   &
-    p_epsR6, p_epsChla, check_fixed_quota, &
-    p_d_tot, p_poro0 
+    p_epsR6, p_epsChla, check_fixed_quota,                                    &
+    p_d_tot, p_poro0,                                                         &
+    SchmidtO2,d_wan
 #ifdef INCLUDE_BEN
   namelist /Param_parameters_ben/                                             &
     CalcBenOrganisms,CalcBenBacteria,                                         &

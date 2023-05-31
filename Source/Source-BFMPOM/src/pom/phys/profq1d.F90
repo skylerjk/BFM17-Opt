@@ -26,7 +26,8 @@
       use global_mem,ONLY: RLEN
       use POM,ONLY: h,a,c,kb,kq,dzz,dz,vh,vhp,wusurf,wvsurf,wubot,wvbot &
            ,q2f,s,t,q2lb,rho,dtef,sprod,km,u,v,bprod,prod,q2lf,z &
-           ,l,sh,sm,kn,kh,gm,gh,zz,q2b,q2,UMOL
+           ,l,sh,sm,kn,kh,gm,gh,zz,q2b,q2,UMOL, &
+           A1,A2,B1,B2,C1,E1,E2,E3
 
 !-------------------------------------------------------------------------!
 !BOC
@@ -43,8 +44,8 @@
      ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
      !  Local Scalars
      ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-      REAL(RLEN) :: A1,A2,B1,B2,C1,CIWC,COEF1,COEF2,COEF3,COEF4,COEF5,CONST1,DH, &
-          E1,E2,E3,GEE,KAPPA,P,SMALL,SQ,zco,coef6
+      REAL(RLEN) :: CIWC,COEF1,COEF2,COEF3,COEF4,COEF5,CONST1,DH, &
+          GEE,KAPPA,P,SMALL,SQ,zco,coef6
       INTEGER :: K,KI
      ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
      !  Local Arrays
@@ -57,16 +58,9 @@
      ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
      !  Data Statements
      ! -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-      DATA A1,B1,A2,B2,C1/0.92,16.6,0.74,10.1,0.08/
-      DATA E1/1.8/,E2/1.33/,E3/1.0/
       DATA KAPPA/0.40/,SQ/0.2/,CIWC/1.0/
       DATA GEE/9.806/
       DATA SMALL/1.E-8/
-!      SM=KB*0.39
-!      SH=KB*0.49
-!      GM=KB*0.154
-!      GH=KB*0.154
-!     ..
 
       DH = H
       DO K = 2,KB - 1

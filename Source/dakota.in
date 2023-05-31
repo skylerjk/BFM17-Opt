@@ -48,7 +48,7 @@ variables
 
 interface
   asynchronous
-    evaluation_concurrency = 29
+    evaluation_concurrency = 51
   fork
     # Interface script between DAKOTA and model
     analysis_driver = 'python interface.py NORM_CONTROL EXPRMT'
@@ -60,7 +60,7 @@ interface
     work_directory
       named 'OptEval'
       directory_tag
-    #  directory_save
+      # directory_save
     # Files need to run model
     copy_files = 'Source/*'
     # Defines parameter output format

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Job Controls
-JobID="SH46P-PV4"
+JobID="SH46P"
 JobQu="regular"
 TimHH=12
 TimMM=00
@@ -13,13 +13,13 @@ NumCP=36
 # bats : using BATS model implementation
 # hots : using HOTS model implementation
 # comb : multi-site run for BATS + HOTS implementations    
-PrmsIn="ParametersV4/Parameters46P.in"
+PrmsIn="ParametersV4/Parameters51P.in"
 ExpTyp="smp"
 Exprmt="hots"
 NormON="True"
 
 # Run Directory
-RunDir='SRuns/HOTS-46P-NrmWrSTD-5Fld-PV4'
+RunDir='SRuns/HOTS-51P-NrmWrSTD-5Fld-PV4'
 # Directory - Sampled parameter value input location
 SmpDir='NA'
 # Home Directory

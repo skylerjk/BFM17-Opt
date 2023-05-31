@@ -34,7 +34,7 @@
   use mem, ONLY: ppO2o, jsurO2o, NO_BOXES_XY, NO_BOXES,  &
      Depth, iiBen, iiPel, flux_vector 
 #endif
-  use mem_Param,  ONLY: AssignAirPelFluxesInBFMFlag
+  use mem_Param,  ONLY: AssignAirPelFluxesInBFMFlag, SchmidtO2, d_wan
 !  use mem_WindOxReaeration_3
 #ifdef BFM_GOTM
   use bio_var, ONLY: SRFindices
@@ -87,8 +87,8 @@
   real(RLEN),parameter  :: C2=128.0_RLEN
   real(RLEN),parameter  :: C3=3.9918_RLEN
   real(RLEN),parameter  :: C4=0.050091_RLEN
-  real(RLEN),parameter  :: O2SCHMIDT=660.0_RLEN
-  real(RLEN),parameter  :: d=0.31_RLEN
+  ! real(RLEN),parameter  :: O2SCHMIDT=660.0_RLEN
+  ! real(RLEN),parameter  :: d=0.31_RLEN
   real(RLEN),parameter  :: CM2M=0.01_RLEN
   integer, save :: first=0
   real(RLEN),allocatable,save,dimension(:) :: pschmidt,temp2,bt,  &
@@ -126,7 +126,8 @@
     temp2 = temp*temp
     pschmidt = (C1 - C2*temp + C3*temp2 - C4*temp2*temp)
 
-    ScRatio = O2SCHMIDT / pschmidt
+    ! ScRatio = O2SCHMIDT / pschmidt
+    ScRatio = SchmidtO2 / pschmidt
     !
     ! ScRatio is limited to 0 when T > 40 °C 
     WHERE(ScRatio .le. 0.0_RLEN); ScRatio=0.0_RLEN ; END WHERE
@@ -134,7 +135,9 @@
     !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     ! Calculate wind dependency, including conversion cm/hr => m/day :
     !-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    kun = (d*wind*wind)*sqrt(ScRatio)* CM2M*HOURS_PER_DAY
+    ! kun = (d*wind*wind)*sqrt(ScRatio)* CM2M*HOURS_PER_DAY
+    kun = (d_wan*wind*wind)*sqrt(ScRatio)* CM2M*HOURS_PER_DAY
+    
     !
     ! This is the old formulation used before 2012 modifications
     !kun_old = (0.074E00_RLEN*wind*wind)*sqrt(O2SCHMIDT/pschmidt)

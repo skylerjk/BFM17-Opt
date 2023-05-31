@@ -65,7 +65,8 @@
                      TSURF, SSURF,                                        &
                      WSSURF,                                              &
                      WTADV, WSADV,                                        &
-                     NRT_o2o,NRT_n1p,NRT_n3n,NRT_n4n
+                     NRT_o2o,NRT_n1p,NRT_n3n,NRT_n4n,                     & 
+                     A1,A2,B1,B2,C1,E1,E2,E3
 !
       use Service,ONLY: ilong, savef
 !
@@ -143,9 +144,12 @@
                                ihotst,UMOL,KL1,KL2,savef,NRT_O2o,NRT_N1p,NRT_N3n,NRT_N4n, &
                                NBCT,NBCS,NBCBFM,UMOL,UMOLT,UMOLS,UMOLBFM,NTP,TRT,SRT, &
                                UPPERH,SSRT
+
+      NAMELIST /Params_POM/ A1,A2,B1,B2,C1,E1,E2,E3
 !
       OPEN(namlst,file='params_POMBFM.nml',status='old',action='read')
       READ(namlst,nml=Params_POMBFM)
+      READ(namlst,nml=Params_POM)
       CLOSE(namlst)
 !
 !
