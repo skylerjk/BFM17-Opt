@@ -1,6 +1,9 @@
 import numpy as np
 
-DataDir = '../SRuns/Smpl-51Prm-Comb-NrmWrSTD-1Chl-NewVels/'
+# Number of Best cases to output
+NumBTest = 20
+
+DataDir = '../SRuns/HOTS-51P-NrmWrSTD-5Fld-PV4/'
 FileName = 'PEOutput.dat'
 
 RRFile = open(DataDir + 'RefRun/result.out')
@@ -11,10 +14,11 @@ PN, PC = np.load(DataDir + 'PControls.npy')
 
 # Count the Active Parameters
 Num_Prms = sum(1 for bl in PC if eval(bl))
-print(Num_Prms)
 
-PrmData = np.zeros([25000,Num_Prms])
-ObjData = np.zeros(25000)
+NumEval = 25000
+# NumEval = 2500
+PrmData = np.zeros([NumEval,Num_Prms])
+ObjData = np.zeros(NumEval)
 
 with open(DataDir + FileName) as DataFile:
     for i, line in enumerate(DataFile):
@@ -30,11 +34,10 @@ Indices = np.argsort(ObjData)
 
 BetterThanNom = (ObjData < NomObjVal).astype(int).sum()
 
-print(BetterThanNom ' samples were better than nominal run.')
-if BetterThanNom > 10:
-    tests = 10
-else:
-    tests = BetterThanNom
+print(str(BetterThanNom) + ' samples were better than nominal run.')
 
-for tst in range(tests)
-    np.save("BATS/PrmVals_BATS_51Prms_5Fld_T" + str(tst), np.squeeze(PrmData[Indices[tst]]))
+for tst in range(NumBTest):
+    # print(Indices[tst])
+    # print(ObjData[Indices[tst]])
+    # print(PrmData[Indices[tst]])
+    np.save("Comb-51-PV4-TEST/PrmVals_Set" + str(tst), np.squeeze(PrmData[Indices[tst]]))
