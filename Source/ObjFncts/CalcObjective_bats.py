@@ -96,10 +96,6 @@ for f in range(Num_Fld):
         BGC_Avg_Data[f,m,:] = np.sum(BGC_Raw_Data[f, 30*m:30*(m+1),:], axis = 0)/30.
 
 # Months to include in Optimization
-# Full Year range(0,12)
-# 11 months range(0,11)
-# 8 months [0,2,3,5,6,8,9,11]
-# 6 months range(0,12,2)
 mon = range(0,12)
 # Number of Months
 NM = float(len(mon))
@@ -108,8 +104,6 @@ N = NM*150.0
 
 # Calculate the RMSD in the field of each state variable
 RMSD = np.sqrt(np.sum(np.sum((BGC_Avg_Data[:,mon,:] - Obs_Ref_Data[:,mon,:])**2, axis = 2), axis = 1)/N)
-# Alternate weighting
-RMSD = np.cbrt(np.sum(np.sum(BGC_Avg_Data[:,mon,:]*(BGC_Avg_Data[:,mon,:] - Obs_Ref_Data[:,mon,:])**2, axis = 2), axis = 1)/N)
 
 if Flag_Norm:
     NVals = np.load('../NormVals.npy')
