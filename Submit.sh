@@ -56,7 +56,7 @@ cat > SubmitPBS.sh << EOF
 #!/bin/bash
 
 #PBS -N $JobID
-#PBS -A UCHS0001
+#PBS -A 
 #PBS -q $JobQu
 #PBS -l walltime=$TimHH:$TimMM:00
 #PBS -l select=$NumNd:ncpus=$NumCP:mpiprocs=$NumCP

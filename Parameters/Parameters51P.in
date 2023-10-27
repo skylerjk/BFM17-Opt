@@ -1,7 +1,7 @@
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 #                      BFM17 Parameter List and Controls                       #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
-ParameterList (Parameters Values from Combined Opt with expanded bounds)
+ParameterList (Baseline Parameters Values and Bounds)
  1. p_PAR       True    0.4        0.25      0.75          # Fraction of photosynthetically available radiation
  2. p_eps0      True    0.0435     0.03      0.05          # Background attenuation coefficient
  3. p_epsChla   True    0.03       0.005     0.045         # Chlorophyll-specific light absorption coefficient

@@ -27,8 +27,7 @@ mkdir $HeadDir
 cp -r $PrmDir $HeadDir/ParameterSets
 cp Source/RunOptCases.sh $HeadDir
 
-# for SR in {0..9}
-for SR in {10..19}
+for SR in {0..19}
 do
   # Job ID
   JobID="OB51-S$SR"
@@ -69,7 +68,7 @@ do
 #!/bin/bash
 
 #PBS -N $JobID
-#PBS -A UCHS0001
+#PBS -A 
 #PBS -q $JobQu
 #PBS -l walltime=$TimHH:$TimMM:00
 #PBS -l select=$NumNd:ncpus=$NumCP:mpiprocs=$NumCP

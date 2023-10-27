@@ -173,6 +173,17 @@ if Exprmt == 'tseb':
     # Calculate the normalized parameter values: Normalized to range 0 to 1
     PV_Norm = (PV - LB) / (UB - LB)
 
+    if SmplON:
+        TV_Norm = np.load(SmpLoc)
+
+        iprm_sv = 0
+        for iprm, prm_val in enumerate(NV):
+            if PC[iprm]:
+                PV_Norm[iprm] = TV_Norm[iprm_sv]
+                iprm_sv += 1
+
+        PV = PV_Norm * (UB - LB) + LB
+
     # Number of Days to simulation in Twin Simulations
     # os.system("sed -i'' \"s/{SimDays}/30/\" Source/params_POMBFM.nml")
     os.system("sed -i'' \"s/{SimDays}/1080/\" Source/params_POMBFM.nml")
