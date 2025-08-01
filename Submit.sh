@@ -1,25 +1,30 @@
 #!/bin/bash
 
 # Job Controls
-JobID="SH46P"
-JobQu="regular"
+JobID="SmpB-BGC3"
+JobQu="economy"
 TimHH=12
 TimMM=00
-NumNd=06
+NumNd=03
 NumCP=36
 
 # Exprement Control - 
 # tseb : Twin Simulation Experiement using BATS data
 # bats : using BATS model implementation
 # hots : using HOTS model implementation
-# comb : multi-site run for BATS + HOTS implementations    
-PrmsIn="ParametersV4/Parameters51P.in"
+# comb : multi-site run for BATS + HOTS implementations
+# Experiment Type -
+# smp : sampling
+# opt : optimization 
+PrmsIn="Parameters/Parameters_BGC-PO.in"
+CoefIn="Parameters/WEddyPerts-BATS.in"
 ExpTyp="smp"
-Exprmt="hots"
+Exprmt="bats"
 NormON="True"
 
 # Run Directory
-RunDir='SRuns/HOTS-51P-NrmWrSTD-5Fld-PV4'
+# RunDir='TSE/TSE-Opt-NrmWrSTD-5Fld-BGC3c-Baseline'
+RunDir='SmpRun/BATS-NrmWrSTD-5Fld-BGC3-BATSPhy'
 # Directory - Sampled parameter value input location
 SmpDir='NA'
 # Home Directory
@@ -31,6 +36,7 @@ mkdir $RunDir
 # Put Run Files into Directory
 cp RunOpt.py $RunDir
 cp $PrmsIn $RunDir/Parameters.in
+cp $CoefIn $RunDir/WEddyPerts.in
 
 # Copy source code to compile BFM17 + POM1D
 cp -r Source/Source-BFMPOM $RunDir/Config

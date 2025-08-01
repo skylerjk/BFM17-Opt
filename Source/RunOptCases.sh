@@ -11,6 +11,7 @@ conda activate OptEnv
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NETCDF/lib
 
 CASE='bats'
+OPTW='True'
 NORM='True'
 
 HOME="$(pwd)"
@@ -26,7 +27,7 @@ do
   # cp ../RunSol.py .
 
   # Run Opt Case
-  python RunSol.py $CASE
+  python RunSol.py $CASE $OPTW
   cd OptRun
   python CalcObjective.py $NORM
 

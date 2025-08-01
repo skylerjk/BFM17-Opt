@@ -1,0 +1,28 @@
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+#                       W_eddy Perturbation Coefficients                       #
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
+CoefficientList
+ 1. WE1_Mn1       -0.99      -15.      0.          # WEddy1 - January 
+ 2. WE1_Mn2       -0.46      -20.      0.          # WEddy1 - February
+ 3. WE1_Mn3       -1.33      -25.      0.          # WEddy1 - March
+ 4. WE1_Mn4       -0.81      -20.      0.          # WEddy1 - April
+ 5. WE1_Mn5       -2.75      -15.      0.          # WEddy1 - May
+ 6. WE1_Mn6       -1.39      -15.      0.          # WEddy1 - June
+ 7. WE1_Mn7       -3.27      -20.      0.          # WEddy1 - July
+ 8. WE1_Mn8       -14.63     -30.      0.          # WEddy1 - August
+ 9. WE1_Mn9       -1.27      -40.      0.          # WEddy1 - September
+10. WE1_Mn10      -2.65      -30.      0.          # WEddy1 - October
+11. WE1_Mn11      -2.46      -20.      0.          # WEddy1 - November
+12. WE1_Mn12      -0.99      -15.      0.          # WEddy1 - December
+13. WE2_Mn1       -0.37      -15.      0.          # WEddy2 - January 
+14. WE2_Mn2       -0.79      -20.      0.          # WEddy2 - February
+15. WE2_Mn3       -0.60      -25.      0.          # WEddy2 - March
+16. WE2_Mn4       -1.75      -20.      0.          # WEddy2 - April
+17. WE2_Mn5       -3.22      -15.      0.          # WEddy2 - May
+18. WE2_Mn6        0.0       -15.      0.          # WEddy2 - June
+19. WE2_Mn7       -4.84      -20.      0.          # WEddy2 - July
+20. WE2_Mn8       -17.40     -30.      0.          # WEddy2 - August
+21. WE2_Mn9       -1.77      -40.      0.          # WEddy2 - September
+22. WE2_Mn10      -7.61      -30.      0.          # WEddy2 - October
+23. WE2_Mn11      -1.20      -20.      0.          # WEddy2 - November
+24. WE2_Mn12      -0.14      -15.      0.          # WEddy2 - December

@@ -88,7 +88,7 @@ MltStrON = False
 LnPI = 4
 with open('Parameters.in') as readFile:
     for i, line in enumerate(readFile):
-        if i >= LnPI:
+        if LnPI <= i < LnPI+NumPrms:
             Parameter_Entry = line.split()
             # print(line)
             # print(Parameter_Entry)
@@ -112,6 +112,39 @@ with open('Parameters.in') as readFile:
                 LB[i-LnPI] = Parameter_Entry[4]
                 # Assign Parameter Upper Boundary
                 UB[i-LnPI] = Parameter_Entry[5]
+        elif i == LnPI+NumPrms:
+            Parameter_Entry = line.split()
+
+            # Opt WEddy Perturbations Control
+            OptWEd = eval(Parameter_Entry[1])
+
+
+if OptWEd:
+    NumCoef = 24
+
+    # Coefficient Designation
+    CD = []
+    # Coefficient Nominal Value
+    CNV = np.zeros(NumCoef)
+    # Coefficent Lower Bound
+    CLB = np.zeros(NumCoef)
+    # Coefficient Upper Bound
+    CUB = np.zeros(NumCoef)
+
+    with open('WEddyPerts.in') as readFile:
+        for ln, line in enumerate(readFile):
+            if ln >= LnPI:
+                Coefficient_Entry = line.split()
+                # Assign Coefficient Designation
+                CD.append(Coefficient_Entry[1])
+
+                # # Assign Coefficient Nominal Value
+                CNV[ln-LnPI] = Coefficient_Entry[2]
+                # # Assign Coefficent Lower Bound
+                CLB[ln-LnPI] = Coefficient_Entry[3]
+                # # Assign Parameter Upper Boundary
+                CUB[ln-LnPI] = Coefficient_Entry[4]
+
 
 RunDir = os.getcwd() 
 
@@ -123,6 +156,7 @@ RunDir = os.getcwd()
 # print(HomDir)
 # print(SmpLoc)
 # print(PN)
+# print(CNV)
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Make Optimization Run Directory                                          # #
@@ -159,30 +193,41 @@ if Exprmt == 'tseb':
             # Random Perturbation within +/- of max percentage
             # PV[iprm] = NV[iprm] + round(random.uniform(-MaxPert,MaxPert),4) * NV[iprm]
 
-            # Correct val if perturbation moved normalized value out of bounds
+            # Correct val if perturbed val greater than upper bound
             if PV[iprm] > UB[iprm]:
-                # PV[iprm] = NV[iprm] - 0.05 * NV[iprm]
-                PV[iprm] = UB[iprm]
+                # Try perturbing in opposite direction
+                PV[iprm] = NV[iprm] - MaxPert * NV[iprm]
+
+                # if still out of bounds - set to UB
+                if PV[iprm] < LB[iprm]:
+                    PV[iprm] = UB[iprm]
+
+            # Correct val if perturbed val less than lower bound
             elif PV[iprm] < LB[iprm]:
-                # PV[iprm] = NV[iprm] + 0.1 * NV[iprm]
-                PV[iprm] = LB[iprm]
+                # Try perturbing in opposity direction
+                PV[iprm] = NV[iprm] + MaxPert * NV[iprm]
+
+                # if still out of bounds -set to LB
+                if PV[iprm] < UB[iprm]:
+                    PV[iprm] = LB[iprm]
 
         else:
             PV[iprm] = NV[iprm]
 
     # Calculate the normalized parameter values: Normalized to range 0 to 1
     PV_Norm = (PV - LB) / (UB - LB)
-
+    
+    # if using prm set from rand. sampling, replace perturbed values
     if SmplON:
+        
         TV_Norm = np.load(SmpLoc)
 
         iprm_sv = 0
         for iprm, prm_val in enumerate(NV):
             if PC[iprm]:
+                PV[iprm] = TV_Norm[iprm_sv]*(UB[iprm] - LB[iprm]) + LB[iprm]
                 PV_Norm[iprm] = TV_Norm[iprm_sv]
                 iprm_sv += 1
-
-        PV = PV_Norm * (UB - LB) + LB
 
     # Number of Days to simulation in Twin Simulations
     # os.system("sed -i'' \"s/{SimDays}/30/\" Source/params_POMBFM.nml")
@@ -200,15 +245,23 @@ if Exprmt == 'tseb':
 elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
     # Calculate normalized nominal parameter values
     PV_Norm = (NV - LB) / (UB - LB)
+    if OptWEd: 
+        CV_Norm = (CNV - CLB) / (CUB - CLB)
 
     if SmplON:
         TV_Norm = np.load(SmpLoc)
 
-        iprm_sv = 0
+        isv = 0
         for iprm, prm_val in enumerate(NV):
             if PC[iprm]:
-                PV_Norm[iprm] = TV_Norm[iprm_sv]
-                iprm_sv += 1
+                PV_Norm[iprm] = TV_Norm[isv]
+                isv += 1
+
+        if OptWEd:
+            for ico in range(24):
+                CV_Norm[ico] = TV_Norm[isv]
+                isv += 1
+
 
         # Test Values - If wanting ref run to use smpl vals
         # TV = PV_Norm * (UB - LB) + LB
@@ -225,20 +278,15 @@ elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
         # Put observational data from the BATS site into opt dir
         os.system("cp -r " + HomDir + "/Source/ObsBATS .")
 
-        # Insert input directory
-        os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" Source/BFM_General.nml")
-        os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" Source/pom_input.nml")
+        # # Insert input directory
+        # os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" Source/BFM_General.nml")
+        # os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" Source/pom_input.nml")
 
     if Exprmt == 'hots' or Exprmt == 'comb':
         # Put input data from the BATS site into opt dir
         os.system("cp -r " + HomDir + "/Source/inputs_hots .")
         # Put observational data from the HOTS site into opt dir
         os.system("cp -r " + HomDir + "/Source/ObsHOTS .")
-
-        if Exprmt == 'hots':
-            # Insert input directory
-            os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" Source/BFM_General.nml")
-            os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" Source/pom_input.nml")
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # # Experiment Independent Set-up                                            # #
@@ -249,8 +297,9 @@ elif Exprmt == 'bats' or Exprmt == 'hots' or Exprmt == 'comb':
 # os.system("cp " + HomDir + "/Source/dakota.in dakota.in")
 
 # Interface inputs - case and normalization selection
-os.system("sed -i'' 's/NORM_CONTROL/"+ str(NormON) + "/' dakota.in")
-os.system("sed -i'' 's/EXPRMT/"+ Exprmt + "/' dakota.in")
+os.system("sed -i'' 's/OPT_WED/" + str(OptWEd) + "/' dakota.in")
+os.system("sed -i'' 's/NORM_CONTROL/" + str(NormON) + "/' dakota.in")
+os.system("sed -i'' 's/EXPRMT/" + Exprmt + "/' dakota.in")
 
 if Proc == 'smp':
     # Do not need any of the multi-start method block
@@ -264,8 +313,9 @@ if Proc == 'smp':
 
     os.system("sed -i'' 's/DI_MTHD/sampling/' dakota.in")
     os.system("sed -i'' 's/DI_CT/sample_type lhs/' dakota.in")
-    # os.system("sed -i'' 's/DI_FE/samples = 2500/' dakota.in")
-    os.system("sed -i'' 's/DI_FE/samples = 25000/' dakota.in")
+    os.system("sed -i'' 's/DI_FE/samples = 10000/' dakota.in")
+    # os.system("sed -i'' 's/DI_FE/samples = 20000/' dakota.in")
+    # os.system("sed -i'' 's/DI_FE/samples = 50000/' dakota.in")
     os.system("sed -i'' 's/DI_LS/seed = 26862/' dakota.in")
 
     os.system("sed -i'' '/DI_MI/d' dakota.in")
@@ -277,6 +327,7 @@ if Proc == 'smp':
     os.system("sed -i'' '/DI_MthdSrc/d' dakota.in")
     os.system("sed -i'' '/DI_IT/d' dakota.in")
     os.system("sed -i'' '/DI_GrdStp/d' dakota.in")
+    os.system("sed -i'' '/DI_MT/d' dakota.in")
 
     os.system("sed -i'' 's/continuous_design =/uniform_uncertain =/' dakota.in")
     os.system("sed -i'' 's/objective_functions = 1/response_functions = 1/' dakota.in")
@@ -340,17 +391,28 @@ elif Proc == 'opt':
 # DAKOTA Controls for input file Variable Block
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 prm_cnt = 0
-for ind, prm in enumerate(PN):
-    if PC[ind]:
+for i, prm in enumerate(PN):
+    if PC[i]:
         os.system("sed -i'' \"/descriptors =/s/$/ \\'" + prm + "\\'/\" dakota.in")
 
         if Proc == 'opt':
-            os.system("sed -i'' '/initial_point =/s/$/ " + f"{PV_Norm[ind]:g}" + "/' dakota.in")
+            os.system("sed -i'' '/initial_point =/s/$/ " + f"{PV_Norm[i]:g}" + "/' dakota.in")
 
         os.system("sed -i'' '/lower_bounds =/s/$/ 0.0/' dakota.in")
         os.system("sed -i'' '/upper_bounds =/s/$/ 1.0/' dakota.in")
 
         prm_cnt += 1
+
+if OptWEd: 
+    prm_cnt = prm_cnt + 24
+    for ii, co in enumerate(CD):
+        os.system("sed -i'' \"/descriptors =/s/$/ \\'" + co + "\\'/\" dakota.in")
+
+        if Proc == 'opt':
+            os.system("sed -i'' '/initial_point =/s/$/ " + f"{CV_Norm[ii]:g}" + "/' dakota.in")
+
+        os.system("sed -i'' '/lower_bounds =/s/$/ 0.0/' dakota.in")
+        os.system("sed -i'' '/upper_bounds =/s/$/ 1.0/' dakota.in")
 
 if Proc == 'smp':
     os.system("sed -i'' '/uniform_uncertain =/s/$/ " + str(prm_cnt) + "/' dakota.in")
@@ -367,6 +429,8 @@ elif Proc == 'opt':
 # Output Information for interface.py
 np.save("PControls",np.array([PN,PC]))
 np.save("PValues", np.array([NV,LB,UB]))
+if OptWEd:
+    np.save("CValues", np.array([CNV,CLB,CUB]))
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # Produce Synthetic Observational data for TSE
@@ -380,6 +444,11 @@ if Exprmt == 'tseb':
         Nml_File = find_key(Namelist_Dictionary, prm)
         # Replace of current parameter in namelist with nominal value
         os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+        
+    # Insert input directory 
+    os.system("sed -i'' \"s/{InDirWE1}/..\/inputs_bats\/bfm17_pom\//\" pom_input.nml")
+    os.system("sed -i'' \"s/{InDirWE2}/..\/inputs_bats\/bfm17_pom\//\" pom_input.nml")
+
 
     # Run Reference Evaluation
     os.system("./pom.exe")
@@ -395,9 +464,9 @@ if Exprmt == 'tseb':
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
 # Generate reference run directory (RefRun)
 os.system("cp -r Source RefRun")
-
 # Input nominal set of parameter values
 os.chdir("RefRun")
+
 # Writing Parameter Values to Namelists
 for i, prm in enumerate(PN):
     Nml_File = find_key(Namelist_Dictionary, prm)
@@ -406,6 +475,27 @@ for i, prm in enumerate(PN):
         os.system("sed -i'' \"s/{" + prm + "}/" + str(PV[i]) +"/\" " + Nml_File)
     else:
         os.system("sed -i'' \"s/{" + prm + "}/" + str(NV[i]) +"/\" " + Nml_File)
+
+
+    if Exprmt == 'bats' or Exprmt == 'comb':
+        # Insert input directory
+        os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" BFM_General.nml")
+        os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" pom_input.nml")
+
+        os.system("sed -i'' \"s/{InDirWE1}/..\/inputs_bats\/bfm17_pom\//\" pom_input.nml")
+        os.system("sed -i'' \"s/{InDirWE2}/..\/inputs_bats\/bfm17_pom\//\" pom_input.nml")
+
+    elif Exprmt == 'hots':
+        # Insert input directory
+        os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" BFM_General.nml")
+        os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" pom_input.nml")
+
+        os.system("sed -i'' \"s/{InDirWE1}/..\/inputs_hots\/bfm17_pom\//\" pom_input.nml")
+        os.system("sed -i'' \"s/{InDirWE2}/..\/inputs_hots\/bfm17_pom\//\" pom_input.nml")
+
+    elif Exprmt == 'tseb':
+        os.system("sed -i'' \"s/{InDirWE1}/..\/inputs_bats\/bfm17_pom\//\" pom_input.nml")
+        os.system("sed -i'' \"s/{InDirWE2}/..\/inputs_bats\/bfm17_pom\//\" pom_input.nml")
 
 # Run Reference Evaluation
 os.system("./pom.exe")
@@ -431,6 +521,31 @@ if NormON:
         os.system("python3 CalcNormVals.py " + NormVal)
         # # Move Reference Run to template directory
         # os.system("cp NormVals.npy ../")
+
+if Exprmt == 'bats' or Exprmt == 'comb' or Exprmt == 'tseb':
+    # Insert input directory
+    os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" Source/BFM_General.nml")
+    os.system("sed -i'' \"s/{InDir}/..\/inputs_bats/\" Source/pom_input.nml")
+
+    if OptWEd:
+        os.system("sed -i'' \"s/{InDirWE1}//\" Source/pom_input.nml")
+        os.system("sed -i'' \"s/{InDirWE2}//\" Source/pom_input.nml")
+    else:
+        os.system("sed -i'' \"s/{InDirWE1}/..\/inputs_bats\/bfm17_pom\//\" Source/pom_input.nml")
+        os.system("sed -i'' \"s/{InDirWE2}/..\/inputs_bats\/bfm17_pom\//\" Source/pom_input.nml")
+
+
+elif Exprmt == 'hots':
+    # Insert input directory
+    os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" Source/BFM_General.nml")
+    os.system("sed -i'' \"s/{InDir}/..\/inputs_hots/\" Source/pom_input.nml")
+
+    if OptWEd:
+        os.system("sed -i'' \"s/{InDirWE1}//\" Source/pom_input.nml")
+        os.system("sed -i'' \"s/{InDirWE2}//\" Source/pom_input.nml")
+    else:
+        os.system("sed -i'' \"s/{InDirWE1}/..\/inputs_hots\/bfm17_pom\//\" Source/pom_input.nml")
+        os.system("sed -i'' \"s/{InDirWE2}/..\/inputs_hots\/bfm17_pom\//\" Source/pom_input.nml")
 
 # Run Dakota
 os.system("dakota -i dakota.in -o output.out -e error.err")

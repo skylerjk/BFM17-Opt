@@ -48,10 +48,10 @@ variables
 
 interface
   asynchronous
-    evaluation_concurrency = 51
+    evaluation_concurrency = 108
   fork
     # Interface script between DAKOTA and model
-    analysis_driver = 'python interface.py NORM_CONTROL EXPRMT'
+    analysis_driver = 'python interface.py OPT_WED NORM_CONTROL EXPRMT'
     # Parameter input file - DAKOTA to model
     parameters_file = 'params.in'
     # Objective function value - model to DAKOTA
